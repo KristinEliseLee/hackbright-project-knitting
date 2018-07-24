@@ -1,6 +1,7 @@
 from flask_sqlalchemy import SQLAlchemy
 
 db=SQLAlchemy()
+
 def connect_to_db(app, db_name):
     """Connect to the db"""
     app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql:///' + db_name
@@ -44,4 +45,13 @@ class UserLikesPattern(db.Model):
     def __repr__(self):
         return f"<Like user_id:{self.user_id} pattern_id:{self.pattern_id}>"
 
-connect_to_db('knitpreview')
+
+if __name__ == "__main__":
+
+
+    from server import app
+    connect_to_db(app, 'knitpreviewproject')
+
+    db.create_all()
+
+    print("Connected to DB.")
