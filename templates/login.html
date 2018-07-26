@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+
+{% block HEAD %}<title>Login</title>{% endblock %}
+{% block BODY %} 
+<form id="login" action="/login", method="POST">
+    Email
+    <input id="email" type="text" required name="email">
+    Password
+    <input id="password" type="text" required name="password">
+    <input type="submit">
+</form>
+<script>
+    function loginUser(result){
+        if(result == 'yes'){
+            window.location.replace('/user');
+            }
+        else{
+            alert('Email and password do not match');
+            }
+        }
+
+    function checkLogin(evt){
+        evt.preventDefault();
+        const formValues = {
+            'email' : $('#email').val(),
+            'password': $('#password').val()
+        };
+        console.log($('#email').val())
+
+        // const formValues = $('#login').serialize();
+        $.post('/login', formValues, loginUser);
+    }
+
+    $('#login').on('submit',checkLogin)
+
+</script>
+
+{% endblock %}

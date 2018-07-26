@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+{% block HEAD %}<title>Your Page</title>{% endblock %}
+{% block BODY %} Your user page!
+
+
+<h4>Patterns you created:</h4>
+{% if user.created_patterns %}
+    <ul>
+    {% for pattern in user.created_patterns %}
+    <li>
+        <a href="/patterns/{{pattern.pattern_id}}">{{pattern.pattern_name}}</a>
+    </li>
+    {% endfor %}
+    </ul>
+{% else %}
+You haven't made any patterns yet!
+<br>
+Make one <a href="/patterns/new">here</a>
+{% endif %}
+<h4>Pattern's you like:</h4>
+{% if user.likes %}
+    <ul>
+    {% for pattern in user.likes %}
+    <li>
+        <a href="/patterns/{{pattern.pattern_id}}">{{pattern.pattern_name}}</a>
+    </li>
+    {% endfor %}
+    </ul>
+{% else %}
+You haven't liked any patterns yet!
+<br>
+Check some out <a href="/patterns">here</a>
+{% endif %}
+
+{% endblock %}
