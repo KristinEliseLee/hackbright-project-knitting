@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+{% block HEAD %}<title>{{pattern.pattern_name}}</title>{% endblock %}
+{% block BODY %}
+<h1>{{pattern.pattern_name}}</h1>
+<h4>Created by user#{{pattern.user_id}}</h4>
+
+<h6 id="like">Like this pattern?</h6>
+<p>{{pattern.pattern_txt}}</p>
+<div>*PICTURE HERE*</div>
+
+<script>
+    function likePattern(){
+        $.post("/pattern{{pattern.pattern_id}}",{}, 
+    }
+
+
+
+    $("#like").on('click', )
+</script>
+
+{% endblock %}

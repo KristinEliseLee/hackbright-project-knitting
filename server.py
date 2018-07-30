@@ -2,33 +2,22 @@ from flask import Flask, render_template, flash, redirect, request, session
 
 from flask_debugtoolbar import DebugToolbarExtension
 import urllib
+from flask_sqlalchemy import SQLAlchemy
 
 from model import connect_to_db, User, Pattern, UserLikesPattern
 
-from wtforms import Form, BooleanField, StringField, PasswordField, validators, ValidationError
+from wtforms import Form, BooleanField, StringField, PasswordField, validators
+from wtforms.validators import ValidationError
 
-class RegistrationForm(Form):
-
-    def validate_new_user(form, field):
-        if User.query.filter_by(email=field.data):
-            raise ValidationError('That email is taken')
-
-    email = StringField('Email Address', [
-        validators.Length(min=6, max=100),
-        validate_new_user])
-    password = PasswordField('New Password', [
-        validators.DataRequired(),
-        validators.EqualTo('confirm', message='Passwords must match'),
-        validators.Length(min=6, max=50),
-    ])
-    confirm = PasswordField('Repeat Password')
-
+from forms import RegistrationForm, LoginForm
 
 
 
 app = Flask(__name__)
 app.secret_key = 'ABCSECRETDEF'
+db = SQLAlchemy()
 connect_to_db(app, 'knitpreviewproject')
+
 
 @app.route('/')
 def show_homepage():
@@ -39,12 +28,6 @@ def show_homepage():
 @app.route('/register')
 def show_registration_form():
     form = RegistrationForm(request.form)
-    if request.method == 'POST' and form.validate():
-        user = User(form.username.data, form.email.data,
-                    form.password.data)
-        db_session.add(user)
-        flash('Thanks for registering')
-        return redirect(url_for('login'))
     return render_template('register.html', form=form)
 
 
@@ -54,7 +37,8 @@ def register_user():
     form = RegistrationForm(request.form)
     if form.validate():
         user = User(email=form.email.data, password=form.password.data)
-        db_session.add(user)
+        db.session.add(user)
+        db.session.commit()
 
         session['user_id'] = user.user_id
         flash('Registered Successfully')
@@ -62,42 +46,44 @@ def register_user():
     return render_template('register.html', form=form)
 
 
+
 @app.route('/login')
 def show_login_page():
     """"""
-    return render_template('login.html')
+    form = LoginForm(request.form)
+    return render_template('login.html', form=form)
 
 
 @app.route('/login', methods=['POST'])
 def login_user():
     """"""
-    email = request.form.get('email')
-    print(email)
-    # email = urllib.unquote(email).decode('utf8')
-    password = request.form.get('password')
-    print(password)
-    user = User.query.filter_by(email=email).first()
-    if not user or user.password != password:
-        print('no')
-        return 'no'
-    else:
+    form = LoginForm(request.form)
+    if form.validate():
+        user = User.query.filter_by(email=form.email.data).first()
         session['user_id'] = user.user_id
-        flash("Successfully logged in")
-        print('yes')
-        return 'yes'
+        flash('Logged In Successfully')
+        return redirect('/user')
+    return render_template('login.html', form=form)
+
+
+    # the below was for AJAX version, the above uses WTForms
+    # email = request.form.get('email')
+    # password = request.form.get('password')
+    # user = User.query.filter_by(email=email).first()
+    # if not user or user.password != password:
+    #     print('no')
+    #     return 'no'
+    # else:
+    #     session['user_id'] = user.user_id
+    #     flash("Successfully logged in")
+    #     print('yes')
+    #     return 'yes'
 
 @app.route('/logout')
 def logout_user():
     del session['user_id']
     flash('Successfully logged out')
     return redirect('/')
-
-
-@app.route('/patterns/new')
-def get_pattern_text():
-    """"""
-
-    return render_template('patterns-new.html')
 
 @app.route('/user')
 def show_user_page():
@@ -109,6 +95,33 @@ def show_user_page():
     else:
 
         return redirect('/login')
+
+
+@app.route('/patterns/new')
+def create_pattern():
+    return render_template('new_pattern.html')
+
+
+@app.route('/patterns/<pattern_id>')
+def show_pattern(pattern_id):
+    pattern= Pattern.query.get(pattern_id)
+    return render_template('pattern.html', pattern=pattern)
+
+
+@app.route('/patterns/<pattern_id>', methods=['POST'])
+def like_pattern(pattern_id):
+    pattern = Pattern.query.get(pattern_id)
+    user = User.query.get(session['user_id'])
+    if pattern in user.likes:
+        return 'already liked'
+    elif pattern in user.patterns:
+        return 'you made this'
+    else:
+        new_like = Like(user_id=user.user_id, pattern_id=pattern.pattern_id)
+        db.session.add(new_like)
+        db.session.commit()
+        return 'added'
+
 
 
 

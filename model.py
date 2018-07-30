@@ -55,20 +55,20 @@ class UserLikesPattern(db.Model):
 
 
 def example_data():
-    user1 = User(user_id=1, email='potato@potato', password='password')
-    user2 = User(user_id=2, email='tater@potato', password='safe')
-    user3 = User(user_id=3, email='ptate@potato', password='secure')
-    pattern1 = Pattern(pattern_id=1, pattern_text='knit 4', pattern_url='/patterns/1', user_id=1, pattern_name='scarf')
-    pattern2 = Pattern(pattern_id=2, pattern_text='purl 3', pattern_url='/patterns/2', user_id=1, pattern_name='hat')
-    pattern3 = Pattern(pattern_id=3, pattern_text='knit 5', pattern_url='/patterns/3', user_id=2, pattern_name='blanket')
-    pattern4 = Pattern(pattern_id=4, pattern_text='knit 2', pattern_url='/patterns/4', user_id=2, pattern_name='scarf2')
+    user1 = User(email='potato@potato', password='password')
+    user2 = User(email='tater@potato', password='safe')
+    user3 = User(email='ptate@potato', password='secure')
+    pattern1 = Pattern(pattern_text='knit 4', pattern_url='/patterns/1', user_id=1, pattern_name='scarf')
+    pattern2 = Pattern(pattern_text='purl 3', pattern_url='/patterns/2', user_id=1, pattern_name='hat')
+    pattern3 = Pattern(pattern_text='knit 5', pattern_url='/patterns/3', user_id=2, pattern_name='blanket')
+    pattern4 = Pattern(pattern_text='knit 2', pattern_url='/patterns/4', user_id=2, pattern_name='scarf2')
 
     db.session.add_all([user1, user2, user3, pattern1, pattern2, pattern3, pattern4])
     db.session.commit()
 
-    like1 = UserLikesPattern(like_id=1, user_id=1, pattern_id=3)
-    like2 = UserLikesPattern(like_id=2, user_id=1, pattern_id=2)
-    like3 = UserLikesPattern(like_id=3, user_id=3, pattern_id=3)
+    like1 = UserLikesPattern(user_id=1, pattern_id=3)
+    like2 = UserLikesPattern(user_id=1, pattern_id=2)
+    like3 = UserLikesPattern(user_id=3, pattern_id=3)
     db.session.add_all([like1, like2, like3])
 
     db.session.commit()
