@@ -5,8 +5,12 @@
 <head>{% block HEAD %} {% endblock %}
 </head>
 <body>
-    <div id="navbar"><a href="/">Home</a> | 
+    <div id="navbar"><a href="/">Home</a> |
+      <a href="/patterns"> Patterns</a> |
         {% if session.get("user_id")%}
+        <a href="/patterns/new">New Pattern</a> |
+        <a href="/patterns/new/react">New Pattern(react)</a> |
+        <a href="/user">Your page</a> |
             <a href="/logout">Log Out</a>
         {% else %}
         <a href="/login"> Log In</a> or <a href="/register">Register</a>
@@ -21,6 +25,7 @@
   src="https://code.jquery.com/jquery-3.3.1.min.js"
   integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
   crossorigin="anonymous"></script>
+  
 {% block BODY %} {% endblock %}
 </body>
 </html>

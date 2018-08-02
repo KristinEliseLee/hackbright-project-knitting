@@ -101,6 +101,10 @@ def show_user_page():
 def create_pattern():
     return render_template('new_pattern.html')
 
+@app.route('/patterns/new/react')
+def create_pattern_react():
+    return render_template('new_pattern_react.html')
+
 
 @app.route('/patterns/<pattern_id>')
 def show_pattern(pattern_id):
