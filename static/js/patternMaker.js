@@ -55,39 +55,39 @@ function translateRows(rows){
     }
     return translatedRows
 }
-function loadStitch(stitch){
-    let newID = _.uniqueId('stitch');
-    const colorPiece = s.path(d=stitch.colorPath);
-    colorPiece.attr({
-            'fill': color[stitch.color],
-            strokeWidth:1
-        });
-    const prevColorPiece = s.path(d=stitch.prevColorPath);
-    let prevColorFill = stitch.color;
-    if(stitch.stitchBelow){
-        prevColorFill = stitch.stitchBelow.color;
-    }
-    prevColorPiece.attr({
-            'fill': color[prevColorFill],
-            strokeWidth:1
-        });
-    const outline = s.path(d=stitch.outline);
-    outline.attr({
-        stroke:'black',
-        strokeWidth:.5,
-        'fill-opacity':0
-        });
-    const group = s.group(colorPiece, prevColorPiece, outline);
-    group.attr({
-            id: newID
-        });
-    idToStitch[newID] = stitch;
-        stitch.image = group;
-        stitch.groupID = newID;
-        group.stitch = stitch;
-        group.click(changeOnClick)
+function loadStitch(stitch) {
+  let newID = _.uniqueId('stitch');
+  const colorPiece = s.path(d=stitch.colorPath);
+  colorPiece.attr({
+    fill: color[stitch.color],
+    strokeWidth:1
+  });
+  const prevColorPiece = s.path(d=stitch.prevColorPath);
+  let prevColorFill = stitch.color;
+  if(stitch.stitchBelow){
+      prevColorFill = stitch.stitchBelow.color;
+  }
+  prevColorPiece.attr({
+          'fill': color[prevColorFill],
+          strokeWidth:1
+      });
+  const outline = s.path(d=stitch.outline);
+  outline.attr({
+      stroke:'black',
+      strokeWidth:.5,
+      'fill-opacity':0
+      });
+  const group = s.group(colorPiece, prevColorPiece, outline);
+  group.attr({
+          id: newID
+      });
+  idToStitch[newID] = stitch;
+      stitch.image = group;
+      stitch.groupID = newID;
+      group.stitch = stitch;
+      group.click(changeOnClick)
 
-    return group
+  return group
 }
 
 function loadRow(rows, rowNumber, down){

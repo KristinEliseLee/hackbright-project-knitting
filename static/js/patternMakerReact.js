@@ -62,7 +62,12 @@ function convertRowTextToColorGroups(str) {
     for (let char of justStitches) {
     // go through all characters between the parenthesis
       if (isNaN(char) && char !== ' ') {
-      // if the character is a letter
+        if (currentNum.length > 0) {
+          colorGroup.groups.push({ stitchAbbr: currentAbbr, numStitches: currentNum });
+          currentAbbr = '';
+          currentNum = '';
+        }
+        // if the character is a letter
         currentAbbr += char;
         // add it to the current abbreviation
       } else if (char !== ' ') {
@@ -74,6 +79,7 @@ function convertRowTextToColorGroups(str) {
         currentAbbr = '';
         currentNum = '';
       }
+      
     } if (currentAbbr !== '') {
       colorGroup.groups.push({ stitchAbbr: currentAbbr, numStitches: currentNum });
     }colorGroups[index] = colorGroup;
@@ -91,21 +97,25 @@ class SvgMain extends React.Component {
       // i is row index in allRows
       // allRows[i] is an array of objects
       const stitchRow = [];
+      let column = 0 ;
       for (let j = 0; j < allRows[i].length; j += 1) {
         // allRows[i][j] is colorgroup in row, an object
         let colorNum = allRows[i][j].colorNum;
         for (let k of allRows[i][j].groups) {
           // k is an object in the array allRows[i][j].groups
+          
           for (let count = 0; count < k.numStitches; count += 1) {
+            
             let stitch = new letterToStitch[k.stitchAbbr]();
             stitch.colorClass = `color${colorNum}`;
             stitch.row = i;
-            stitch.column = j;
+            stitch.column = column;
             if (i > 0) {
-              stitch.stitchBelow = stitchRows[i-1][j];
+              stitch.stitchBelow = stitchRows[i - 1][column];
             }
             stitchRow.push(stitch);
-            console.log(stitch)
+            console.log(stitch);
+            column += 1
           }
         }
       }
@@ -174,7 +184,7 @@ class SvgMain extends React.Component {
   }
 
   render() {
-    return (<svg id='svg' width='200px' height='200px' />);
+    return (<svg id='svg' width='300px' height='300px' />);
   }
 }
 
@@ -229,8 +239,8 @@ class App extends React.Component {
         { edit: false, rowText: 'C1(K3 P2)' },
         { edit: false, rowText: 'C2(P3 K2)' }
       ],
-      colors: ['blue'],
-      colorVals: ['blue']
+      colors: ['skyblue'],
+      colorVals: ['skyblue']
     };
     this.handleRowSubmit = this.handleRowSubmit.bind(this);
     this.handleRowChange = this.handleRowChange.bind(this);
