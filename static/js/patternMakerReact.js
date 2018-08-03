@@ -20,6 +20,14 @@ class ColorText extends React.Component {
 }
 
 class RowText extends React.Component {
+  constructor(props) {
+    super(props)
+    this.state = { value: this.props.value};
+  }
+  handleChange(event) {
+    this.setState({ value: event.target.value });
+  }
+
   renderColorGroups() {
     const newRow = [];
     const colorGroups = this.props.row.colorGroups;
@@ -33,7 +41,15 @@ class RowText extends React.Component {
   }
 
   render() {
-    return <span className='rowText'>{this.renderColorGroups()} </span>;
+    if (this.props.row.edit === true) {
+      return (<form onSubmit= {this.handleSubmit}><input className='rowEdit'
+        type='text' value={this.state.value} onChange={
+          this.handleChange}/><input type='submit'/></form>
+      );
+    }
+    return (<span className='rowText' id={'row' + this.props.id.toString()}>{
+      this.renderColorGroups()} </span>
+    );
   }
 }
 
@@ -42,21 +58,21 @@ class App extends React.Component {
     super(props);
     this.state = {
       rows: [
-        { colorGroups: [ { colorNum: 1, groups: [{ stitchAbbr: 'K', numStitches: 7 }] }] },
-        { colorGroups: [ { colorNum: 2, groups: [{ stitchAbbr: 'P', numStitches: 7 }] }] }
+        { edit: false, colorGroups: [ { colorNum: 1, groups: [{ stitchAbbr: 'K', numStitches: 7 }] }] },
+        { edit: false, colorGroups: [ { colorNum: 2, groups: [{ stitchAbbr: 'P', numStitches: 7 }] }] }
       ]
     };
   }
   addTopRow() {
     const newRows = this.state.rows.concat();
-    newRows.push({ colorGroups: [ { colorNum: 1, groups: [{ stitchAbbr: 'NA',
+    newRows.push({ edit: false, colorGroups: [ { colorNum: 1, groups: [{ stitchAbbr: 'NA',
       numStitches: 0 }] }] });
     this.setState({ rows: newRows });
   }
   addARow(index) {
     const newRows = this.state.rows.concat();
 
-    newRows.splice(index, 0, { colorGroups: [ { colorNum: 1, groups: [{
+    newRows.splice(index, 0, { edit: false, colorGroups: [ { colorNum: 1, groups: [{
       stitchAbbr: 'NA', numStitches: 0 }] }] });
     this.setState({ rows: newRows });
   }
@@ -65,17 +81,45 @@ class App extends React.Component {
     newRows.splice(index, 1);
     this.setState({ rows: newRows });
   }
+  renderTextOnlyRow(index) {
+    const row = this.state.rows[index];
+    let rowString = '';
+    for (let colorGroup of row.colorGroups) {
+      rowString += ('C' + colorGroup.colorNum + '( ');
+      for (let group of colorGroup.groups) {
+        rowString += (group.stitchAbbr + group.numStitches.toString() + ' ');
+      }
+      rowString += ') ';
+    }
+    return rowString;
+  }
+  editRow(index) {
+    const editRows = this.state.rows;
+    editRows[index].edit = true;
+    editRows[index].value = renderTextOnlyRow(index)
+    this.setState({ rows: editRows });
+  }
+
+  handleSubmit(i) {
+    const editRows = this.state.rows;
+    editRows[index].edit = false;
+    
+  }
+
 
   renderRows() {
     const allRows = [];
     const rowsCopy = this.state.rows;
     for (let i = (rowsCopy.length - 1); i >= 0; i -= 1) {
-      allRows.push(<span key={i.toString()}><p><button className='delete'
+      allRows.push(<span key={i.toString()}><button className='delete'
         onClick={() => this.deleteARow(i)}> - </button> {'Row' +
-        (i + 1).toString()}: <RowText row={this.state.rows[i]}/></p>
+        (i + 1).toString()}: <RowText id={i} row={this.state.rows[i]}
+        value={this.renderTextOnlyRow(i)} rowNumber={i}/><button className='edit' onClick={
+        ()=> this.editRow(i)}>Edit</button><br/>
       <button className='add' onClick={() => this.addARow(i)}>
       + </button>
       </span>);
+    for (let 
     }
     return allRows;
   }
