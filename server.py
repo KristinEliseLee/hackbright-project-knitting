@@ -161,7 +161,7 @@ def save_pattern():
     save_file.close()
     pattern.pattern_url = (f'patterns/{pattern.pattern_id}.txt')
     db.session.commit()
-    return 'Pattern saved!'
+    return str(pattern.pattern_id)
 
 if __name__ == '__main__':
 

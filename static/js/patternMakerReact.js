@@ -364,13 +364,13 @@ class App extends React.Component {
     formData.append('patternText', patternText);
     fetch('/save', { method: 'POST', body: formData })
       .then(response => response.text())
-      .then((data) => alert(data));
+      .then(num => window.location.replace(`/patterns/${num}`));
   }
 
   handleNameChange(evt) {
     const newState = $.extend(true, {}, this.state);
     newState.name = evt.target.value;
-    this.setState({name: newState.name})
+    this.setState({ name: newState.name });
   }
 
 
