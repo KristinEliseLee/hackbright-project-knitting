@@ -3,27 +3,20 @@
 
 {% endblock %}
 {% block BODY %}
-<div class="container-fluid">
-    <div class="row">
-        <div id="textSide" class="col-4">
-            <h3> Pattern Text</h3>
-            <div id="text">
-            </div>
+<div id="root" class="container-fluid">
 
-        </div>
-        <div id="svgSide"class="col-8">
-            <svg id="svg"></svg>
-        </div>
-    </div>
 </div>
 
 
-
-
-
-<script src="/static/lib/Snap.svg-0.5.1/dist/snap.svg-min.js"></script>
-<script scr='/static/lib/snapHelperFunctions.js'></script>
+<script src="/static/lib/snap_svg_min.js"></script>
+<script scr="/static/lib/snapHelperFunctions.js}}"></script>
 <script src="/static/lib/underscore.js"></script>
-<script src="/static/js/patternMaker.js"></script>
+<script src="https://unpkg.com/react@16/umd/react.development.js" crossorigin></script>
+<script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+<script src="https://unpkg.com/react-dom@16/umd/react-dom.development.js" crossorigin></script>
+<script src="/static/lib/snap_svg_min.js"></script>
+<!-- <script type="text/javascript" src="/static/lib/snap.svg.js"></script> -->
+<!-- <script type="text/javascript" src="/static/lib/snap.svg-cjs.js"></script> -->
+<script type="text/jsx" src="/static/js/patternMakerReact.js"></script>
 
 {% endblock %}

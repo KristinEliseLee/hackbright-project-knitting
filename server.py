@@ -4,7 +4,7 @@ from flask_debugtoolbar import DebugToolbarExtension
 import urllib
 from flask_sqlalchemy import SQLAlchemy
 
-from model import connect_to_db, User, Pattern, UserLikesPattern
+from model import connect_to_db, User, Pattern, UserLikesPattern, db
 
 from wtforms import Form, BooleanField, StringField, PasswordField, validators
 from wtforms.validators import ValidationError
@@ -12,10 +12,9 @@ from wtforms.validators import ValidationError
 from forms import RegistrationForm, LoginForm
 
 
-
 app = Flask(__name__)
 app.secret_key = 'ABCSECRETDEF'
-db = SQLAlchemy()
+# db = SQLAlchemy()
 connect_to_db(app, 'knitpreviewproject')
 
 
@@ -97,19 +96,35 @@ def show_user_page():
         return redirect('/login')
 
 
+@app.route('/patterns')
+def show_all_patterns():
+    patterns = Pattern.query.all()
+    return render_template('patterns.html', patterns=patterns)
+
 @app.route('/patterns/new')
 def create_pattern():
-    return render_template('new_pattern.html')
-
-@app.route('/patterns/new/react')
-def create_pattern_react():
-    return render_template('new_pattern_react.html')
-
+    user_id = session.get('user_id')
+    if user_id:
+        return render_template('new_pattern.html')
+    else:
+        return redirect('/login')
 
 @app.route('/patterns/<pattern_id>')
 def show_pattern(pattern_id):
+    user_id = session.get('user_id')
     pattern= Pattern.query.get(pattern_id)
-    return render_template('pattern.html', pattern=pattern)
+    if not user_id:
+        to_like = 'logged out'
+    elif pattern.user_id == user_id:
+        to_like = 'created'
+    elif UserLikesPattern.query.filter_by(user_id=user_id, pattern_id=pattern_id).first():
+        to_like = 'liked'
+    else:
+        to_like = 'like'
+
+    pattern_svg_info = open(pattern.pattern_url)
+    pattern_svg = pattern_svg_info.readline().rstrip();
+    return render_template('pattern.html', pattern=pattern, pattern_svg=pattern_svg, to_like=to_like)
 
 
 @app.route('/patterns/<pattern_id>', methods=['POST'])
@@ -117,18 +132,36 @@ def like_pattern(pattern_id):
     pattern = Pattern.query.get(pattern_id)
     user = User.query.get(session['user_id'])
     if pattern in user.likes:
-        return 'already liked'
-    elif pattern in user.patterns:
-        return 'you made this'
+        old_like = UserLikesPattern.query.filter_by(user_id=user.user_id, pattern_id=pattern.pattern_id).first()
+        db.session.delete(old_like)
+        db.session.commit()
+        return 'like'
+
+    if pattern in user.created_patterns:
+        return 'created'
+
     else:
-        new_like = Like(user_id=user.user_id, pattern_id=pattern.pattern_id)
+        new_like = UserLikesPattern(user_id=user.user_id, pattern_id=pattern.pattern_id)
         db.session.add(new_like)
         db.session.commit()
-        return 'added'
+        return 'liked'
 
-
-
-
+@app.route('/save', methods=['POST'])
+def save_pattern():
+    svg_string = request.form.get('svgString')
+    pattern_text = request.form.get('patternText')
+    pattern_name = request.form.get('name')
+    user_id = session.get('user_id')
+    pattern = Pattern(user_id=user_id, pattern_text=pattern_text,
+        pattern_name=pattern_name)
+    db.session.add(pattern)
+    db.session.commit()
+    save_file = open((f'patterns/{pattern.pattern_id}.txt'), 'w')
+    save_file.write(svg_string)
+    save_file.close()
+    pattern.pattern_url = (f'patterns/{pattern.pattern_id}.txt')
+    db.session.commit()
+    return 'Pattern saved!'
 
 if __name__ == '__main__':
 

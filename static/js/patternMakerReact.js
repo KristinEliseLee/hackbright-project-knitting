@@ -33,6 +33,14 @@ const letterToStitch = {
   'K': Knit, 'P': Purl
 };
 
+function createTextOfPattern(rowStringsArray) {
+  let answer = '';
+  for (let i = 0; i < rowStringsArray.length; i += 1) {
+    answer += `Row${i + 1}: ${rowStringsArray[i].rowText}\n`
+  }
+  return answer;
+}
+
 function convertRowTextToColorGroups(str) {
   const colorGroups = [];
   // for list of all colorgroups 'C#(stitchgroups)'
@@ -88,6 +96,10 @@ function convertRowTextToColorGroups(str) {
 }
 
 class SvgMain extends React.Component {
+  constructor(props) {
+    super(props);
+    this.makeStitchRows =this.makeStitchRows.bind(this);
+  }
   makeStitchRows() {
     const stitchRows = [];
     const allRowsText = this.props.rows;
@@ -114,13 +126,13 @@ class SvgMain extends React.Component {
               stitch.stitchBelow = stitchRows[i - 1][column];
             }
             stitchRow.push(stitch);
-            console.log(stitch);
             column += 1
           }
         }
       }
       stitchRows.push(stitchRow);
     }
+
     return stitchRows;
   }
 
@@ -184,9 +196,25 @@ class SvgMain extends React.Component {
   }
 
   render() {
-    return (<svg id='svg' width='300px' height='300px' />);
+    return (<svg id='svg' width='500px' height='500px' />);
   }
 }
+
+
+class SavePattern extends React.Component {
+  render() {
+    return (
+      <form id='savePattern' onSubmit={(evt) => {evt.preventDefault(); this.props.handleSubmit()}}>
+      Name:
+        <input type='text' required onChange={(evt) => this.props.handleChange(evt)}
+        value={this.props.value}/>
+        <input type='submit' name='save'/>
+      </form>
+
+    );
+  }
+}
+
 
 class ColorText extends React.Component {
   renderColorBoxes() {
@@ -239,8 +267,9 @@ class App extends React.Component {
         { edit: false, rowText: 'C1(K3 P2)' },
         { edit: false, rowText: 'C2(P3 K2)' }
       ],
-      colors: ['skyblue'],
-      colorVals: ['skyblue']
+      colors: ['skyblue', 'pink'],
+      colorVals: ['skyblue', 'pink'],
+      name:''
     };
     this.handleRowSubmit = this.handleRowSubmit.bind(this);
     this.handleRowChange = this.handleRowChange.bind(this);
@@ -251,6 +280,8 @@ class App extends React.Component {
     this.handleColorChange = this.handleColorChange.bind(this);
     this.addColor = this.addColor.bind(this);
     this.deleteColor = this.deleteColor.bind(this);
+    this.handleSave = this.handleSave.bind(this);
+    this.handleNameChange = this.handleNameChange.bind(this);
   }
 
   addTopRow() {
@@ -275,7 +306,7 @@ class App extends React.Component {
   editRow(index) {
     const newState = $.extend(true, {}, this.state);
     newState.rows[index].edit = true;
-    newState.rows[index].value = newState.rows[index].rowText
+    newState.rows[index].value = newState.rows[index].rowText;
     this.setState({ rows: newState.rows });
   }
 
@@ -294,7 +325,7 @@ class App extends React.Component {
 
   addColor() {
     const newState = $.extend(true, {}, this.state);
-    if (newState.colors.length <= 9) {
+    if (newState.colors.length < 9) {
       newState.colors.push('');
       newState.colorVals.push('');
       this.setState({ colors: newState.colors, colorVals: newState.colorVals });
@@ -321,6 +352,25 @@ class App extends React.Component {
     newState.colorVals[i] = newState.colorVals[i].replace(/\s/g, '');
     newState.colors[i] = newState.colorVals[i];
     this.setState({ colors: newState.colors });
+  }
+
+  handleSave() {
+    const s = Snap('#svg');
+    const svgString = s.toString();
+    const formData = new FormData();
+    formData.append('svgString', svgString);
+    formData.append('name', this.state.name);
+    const patternText = createTextOfPattern(this.state.rows);
+    formData.append('patternText', patternText);
+    fetch('/save', { method: 'POST', body: formData })
+      .then(response => response.text())
+      .then((data) => alert(data));
+  }
+
+  handleNameChange(evt) {
+    const newState = $.extend(true, {}, this.state);
+    newState.name = evt.target.value;
+    this.setState({name: newState.name})
   }
 
 
@@ -361,6 +411,8 @@ class App extends React.Component {
         </div>
         <div id='svgside' className='col-6'>
           <SvgMain size='10px' rows={this.state.rows} colors={this.state.colors}/>
+          <SavePattern value={this.state.name} handleSubmit={this.handleSave} 
+          handleChange={this.handleNameChange}/>
         </div>
       </div>
     );

@@ -35,9 +35,8 @@ class Pattern(db.Model):
     pattern_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     pattern_name= db.Column(db.String(200), nullable=False)
     pattern_text = db.Column(db.Text, nullable=False)
-    pattern_url = db.Column(db.String(200), nullable=False)
+    pattern_url = db.Column(db.String(200))
     user_id = db.Column(db.Integer, db.ForeignKey('users.user_id'), nullable=False)
-
     def __repr__(self):
         return f"<Pattern created by user_id {self.user_id} pattern_url: {self.pattern_url}>"
 
@@ -54,24 +53,13 @@ class UserLikesPattern(db.Model):
 
 
 
-def example_data():
-    user1 = User(email='potato@potato', password='password')
-    user2 = User(email='tater@potato', password='safe')
-    user3 = User(email='ptate@potato', password='secure')
-    pattern1 = Pattern(pattern_text='knit 4', pattern_url='/patterns/1', user_id=1, pattern_name='scarf')
-    pattern2 = Pattern(pattern_text='purl 3', pattern_url='/patterns/2', user_id=1, pattern_name='hat')
-    pattern3 = Pattern(pattern_text='knit 5', pattern_url='/patterns/3', user_id=2, pattern_name='blanket')
-    pattern4 = Pattern(pattern_text='knit 2', pattern_url='/patterns/4', user_id=2, pattern_name='scarf2')
+# def example_data():
+#     user1 = User(email='potato@potato', password='password')
+#     user2 = User(email='tater@potato', password='safety')
+#     user3 = User(email='ptate@potato', password='secure')
 
-    db.session.add_all([user1, user2, user3, pattern1, pattern2, pattern3, pattern4])
-    db.session.commit()
-
-    like1 = UserLikesPattern(user_id=1, pattern_id=3)
-    like2 = UserLikesPattern(user_id=1, pattern_id=2)
-    like3 = UserLikesPattern(user_id=3, pattern_id=3)
-    db.session.add_all([like1, like2, like3])
-
-    db.session.commit()
+#     db.session.add_all([user1, user2, user3])
+#     db.session.commit()
 
 
 if __name__ == '__main__':
@@ -79,6 +67,6 @@ if __name__ == '__main__':
     from server import app
 
     connect_to_db(app, 'knitpreviewproject')
-    # db.create_all()
+    db.create_all()
     # example_data()
-    print("Connected to DB.")
+    # print("Connected to DB.")
