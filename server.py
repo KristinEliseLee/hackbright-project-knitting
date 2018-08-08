@@ -107,7 +107,7 @@ def create_pattern():
     """ Shows page to create new pattern only if logged in"""
     user_id = session.get('user_id')
     if user_id:
-        return render_template('new_pattern.html')
+        return render_template('patterns_new.html')
     else:
         return redirect('/login')
 
