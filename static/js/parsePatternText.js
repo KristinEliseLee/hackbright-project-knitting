@@ -178,3 +178,67 @@ function parseColorGroups(rowText) {
 //   }
 //   return colorGroups;
 // }
+
+function makeStitchRows(rowsText) {
+  // makes an array of arrays of stitch
+  // may break this up into 2/3 methods
+  const stitchRows = [];
+  const allRows = rowsText.map(x => parseColorGroups(x.rowText));
+  // allRows is an array of arrays
+  for (let i = 0; i < allRows.length; i += 1) {
+    // i is row index in allRows
+    // allRows[i] is an array of objects
+    let leftCS = [];
+    let rightCS = [];
+    const stitchRow = [];
+    let column = 0;
+    for (let j = 0; j < allRows[i].length; j += 1) {
+      // allRows[i][j] is colorgroup in row, an object
+      let colorNum = allRows[i][j].colorNum;
+      for (let k of allRows[i][j].groups) {
+        // k is an object in the array allRows[i][j].groups
+        for (let count = 0; count < k.numStitches; count += 1) {
+          console.log(k.stitchAbbr)
+          let stitch = new letterToStitch[k.stitchAbbr]();
+          stitch.colorClass = `color${colorNum}`;
+          if (stitch.cable) {
+            if (leftCS.length === 0 || leftCS[0].name === stitch.name) {
+              leftCS.push(stitch);
+            } else if (rightCS.length === 0 || rightCS[0].name === stitch.name) {
+              rightCS.push(stitch);
+            } else {
+              for (let cb of leftCS) {
+                cb.offset = rightCS.length;
+              }
+              for (let cb of rightCS) {
+                cb.offset = (leftCS.length * -1);
+              }
+              leftCS = [stitch];
+              rightCS = [];
+            }
+          }
+          stitch.row = i;
+          stitch.column = column;
+          if (i > 0) {
+            let offset = 0;
+            if (stitchRows[i - 1][column]) {
+              offset = stitchRows[i - 1][column].offset;
+            }
+
+            stitch.stitchBelow = stitchRows[i - 1][column + offset];
+          }
+          stitchRow.push(stitch);
+          for (let cb of leftCS) {
+            cb.offset = rightCS.length;
+          }
+          for (let cb of rightCS) {
+            cb.offset = (leftCS * -1);
+          }
+          column += 1;
+        }
+      }
+    }
+    stitchRows.push(stitchRow);
+  }
+  return stitchRows;
+}
