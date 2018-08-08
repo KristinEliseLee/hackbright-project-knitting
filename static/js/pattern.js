@@ -1,19 +1,21 @@
-/* global $ likedYet patternid :true*/
-function showLikeButton(likedYet) {
-  console.log(likedYet);
+/* global $ likeStatus :true*/
+
+function showLikeButton(likeStatus) {
+  // shows like or unlike button
   $('.like').hide();
-  if (likedYet === 'like') {
+  if (likeStatus === 'like') {
     $('#like').show();
   }
-  if (likedYet === 'liked') {
+  if (likeStatus === 'liked') {
     $('#liked').show();
   }
 }
 
-showLikeButton(likedYet);
+showLikeButton(likeStatus);
 
 function likePattern() {
-  $.post(`/patterns/${patternid}`, {}, (res) => showLikeButton(res));
+  // sends the like/unlike request to server
+  $.post(`${window.location.pathname}`, {}, (res) => showLikeButton(res));
 }
 
 $('.like').on('click', likePattern);

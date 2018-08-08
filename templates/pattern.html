@@ -2,16 +2,15 @@
 {% block HEAD %}<title>{{pattern.pattern_name}}</title>{% endblock %}
 {% block BODY %}
 <h1>{{pattern.pattern_name}}</h1>
-<h4>Created by user#{{pattern.user_id}}</h4>
-<h6 id="like" class="like">Like this pattern?</h6>
-<h6 id="liked" class="like"> You like this pattern. Unlike it?</h6>
+<h4>Created by user #{{pattern.user_id}}</h4>
+<button id="like" class="like" display='none'>Like</button>
+<button id="liked" class="like" display='none'>Unlike</button>
 <pre>{{pattern.pattern_text}}</pre>
 <div>{{pattern_svg | safe}}</div>
 
 
 <script>
-    const likedYet = '{{ to_like }}' ;
-    const patternid = '{{ pattern.pattern_id }}'
+  const likeStatus = '{{ to_like }}';
 </script>
 <script type="text/javascript" src="/static/js/pattern.js"></script>
 

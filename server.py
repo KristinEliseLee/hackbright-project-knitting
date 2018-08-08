@@ -32,7 +32,7 @@ def show_registration_form():
 
 @app.route('/register', methods=['POST'])
 def register_user():
-    """adds new user to the DB and logs them in"""
+    """ Adds new user to the DB and logs them in"""
     form = RegistrationForm(request.form)
     if form.validate():
         user = User(email=form.email.data, password=form.password.data)
@@ -45,17 +45,15 @@ def register_user():
     return render_template('register.html', form=form)
 
 
-
 @app.route('/login')
 def show_login_page():
-    """"""
     form = LoginForm(request.form)
     return render_template('login.html', form=form)
 
 
 @app.route('/login', methods=['POST'])
 def login_user():
-    """"""
+    """ Logs in user """
     form = LoginForm(request.form)
     if form.validate():
         user = User.query.filter_by(email=form.email.data).first()
@@ -84,9 +82,10 @@ def logout_user():
     flash('Successfully logged out')
     return redirect('/')
 
+
 @app.route('/user')
 def show_user_page():
-    """"""
+    """ Shows the user page only if logged in"""
 
     user_id = session.get('user_id')
     if user_id:
@@ -98,19 +97,24 @@ def show_user_page():
 
 @app.route('/patterns')
 def show_all_patterns():
+    """ currently shows all patterns in no particular order"""
     patterns = Pattern.query.all()
     return render_template('patterns.html', patterns=patterns)
 
+
 @app.route('/patterns/new')
 def create_pattern():
+    """ Shows page to create new pattern only if logged in"""
     user_id = session.get('user_id')
     if user_id:
         return render_template('new_pattern.html')
     else:
         return redirect('/login')
 
+
 @app.route('/patterns/<pattern_id>')
 def show_pattern(pattern_id):
+    """ Based on user log status, shows like button on pattern page. """
     user_id = session.get('user_id')
     pattern= Pattern.query.get(pattern_id)
     if not user_id:
@@ -129,6 +133,7 @@ def show_pattern(pattern_id):
 
 @app.route('/patterns/<pattern_id>', methods=['POST'])
 def like_pattern(pattern_id):
+    """ Toggles on or off user like of pattern"""
     pattern = Pattern.query.get(pattern_id)
     user = User.query.get(session['user_id'])
     if pattern in user.likes:
@@ -146,8 +151,10 @@ def like_pattern(pattern_id):
         db.session.commit()
         return 'liked'
 
+
 @app.route('/save', methods=['POST'])
 def save_pattern():
+    """ Saves the pattern to the DB, creates a saved SVG text file."""
     svg_string = request.form.get('svgString')
     pattern_text = request.form.get('patternText')
     pattern_name = request.form.get('name')
@@ -156,12 +163,16 @@ def save_pattern():
         pattern_name=pattern_name)
     db.session.add(pattern)
     db.session.commit()
+    # Creates the file as {pattern_id}.txt
+    # Cant create the file until pattern has a pattern_id.
     save_file = open((f'patterns/{pattern.pattern_id}.txt'), 'w')
     save_file.write(svg_string)
     save_file.close()
     pattern.pattern_url = (f'patterns/{pattern.pattern_id}.txt')
     db.session.commit()
+    # Gives back the pattern_id for redirect
     return str(pattern.pattern_id)
+
 
 if __name__ == '__main__':
 
@@ -171,6 +182,3 @@ if __name__ == '__main__':
     DebugToolbarExtension(app)
 
     app.run(host="0.0.0.0")
-
-
-
