@@ -198,7 +198,6 @@ function makeStitchRows(rowsText) {
       for (let k of allRows[i][j].groups) {
         // k is an object in the array allRows[i][j].groups
         for (let count = 0; count < k.numStitches; count += 1) {
-          console.log(k.stitchAbbr)
           let stitch = new letterToStitch[k.stitchAbbr]();
           stitch.colorClass = `color${colorNum}`;
           if (stitch.cable) {
@@ -209,9 +208,12 @@ function makeStitchRows(rowsText) {
             } else {
               for (let cb of leftCS) {
                 cb.offset = rightCS.length;
+                console.log(cb)
+                console.log(cb.offset)
               }
               for (let cb of rightCS) {
                 cb.offset = (leftCS.length * -1);
+                console.log(cb.offset);
               }
               leftCS = [stitch];
               rightCS = [];
@@ -228,13 +230,13 @@ function makeStitchRows(rowsText) {
             stitch.stitchBelow = stitchRows[i - 1][column + offset];
           }
           stitchRow.push(stitch);
-          for (let cb of leftCS) {
-            cb.offset = rightCS.length;
-          }
-          for (let cb of rightCS) {
-            cb.offset = (leftCS * -1);
-          }
           column += 1;
+        }
+        for (let cb of leftCS) {
+          cb.offset = rightCS.length;
+        }
+        for (let cb of rightCS) {
+          cb.offset = (leftCS.length * -1);
         }
       }
     }

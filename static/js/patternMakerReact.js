@@ -1,5 +1,9 @@
 /* global React ReactDOM makeStitchRows $:true*/
 
+
+
+
+
 class SvgMain extends React.Component {
   // constructor(props) {
   //   super(props);
@@ -81,9 +85,16 @@ class SvgMain extends React.Component {
     } else {
       prevColor.addClass(stitch.colorClass);
     }
+    // if (stitch.offset !== 0) {
+    //   prevColor.transform(`translate${stitch.offset * stitch.width} 0)`);
+    //   mainColor.transform(`translate${stitch.offset * stitch.width} 0)`);
+    //   outline.transform(`translate${stitch.offset * stitch.width} 0)`);
+    //   console.log(`translate${stitch.offset * stitch.width} 0)`)
+    // }
     const group = s.g(prevColor, mainColor, outline);
     group.addClass(stitch.cableClass);
     stitch.image = group;
+    
   }
 
   renderRow(s, row) {
@@ -92,9 +103,20 @@ class SvgMain extends React.Component {
     for (let stitch of row) {
       this.renderStitch(s, stitch);
       stitch.image.transform(`translate(${horizontal},0)`);
+      let toSkew;
+      if (stitch.cable) {
+        toSkew = 1;
+
+        if (stitch.offset < 0) {
+          toSkew = -1;
+        }
+        stitch.image.skew(-32 * stitch.offset, 0);
+        stitch.image.translate((stitch.width * stitch.offset), 0);
+      }
       horizontal += stitch.width;
       rowGroup.add(stitch.image);
     }
+
     return rowGroup;
   }
 
@@ -114,6 +136,8 @@ class SvgMain extends React.Component {
     for (let i = 0; i < this.props.colors.length; i += 1) {
       $(`.color${i}`).attr({ fill: this.props.colors[i] });
     }
+    $('.frontCable').attr({ 'fill-opacity':'100' });
+    $('.outline').attr({ stroke: 'black', strokeWidth: 1 })
   }
 
   componentDidUpdate() {
@@ -123,6 +147,12 @@ class SvgMain extends React.Component {
     for (let i = 0; i < this.props.colors.length; i += 1) {
       $(`.color${i}`).attr({ fill: this.props.colors[i] });
     }
+    $('.frontCable').attr({ 'fill-opacity':'100' });
+    // let frontCables = s.g(s.selectAll('.frontCable'));
+    // let backCables = s.g(s.selectAll('.backCable'))
+    // frontCables.after(backCables)
+
+    $('.outline').attr({ stroke: 'black', strokeWidth: 1 })
   }
 
   render() {
@@ -185,8 +215,9 @@ class App extends React.Component {
     super(props);
     this.state = {
       rows: [
-        { edit: false, rowText: 'C1(K3) C2(P3)' },
-        { edit: false, rowText: 'C1(P3 K3)' }
+        { edit: false, rowText: 'C1(K4)' },
+        { edit: false, rowText: 'C1(CBK2) C2(CFK2)' },
+        { edit: false, rowText: 'C1(K4)' }
       ],
       colors: ['skyblue', 'pink'],
       colorVals: ['skyblue', 'pink'],
