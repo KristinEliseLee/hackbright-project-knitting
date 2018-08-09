@@ -203,22 +203,30 @@ function makeStitchRows(rowsText) {
           if (stitch.cable) {
             if (leftCS.length === 0 || leftCS[0].name === stitch.name) {
               leftCS.push(stitch);
-            } else if (rightCS.length === 0 || rightCS[0].name === stitch.name) {
+            } else if (rightCS.length < leftCS.length && (rightCS.length === 0 || 
+              rightCS[0].name === stitch.name)) {
               rightCS.push(stitch);
             } else {
               for (let cb of leftCS) {
                 cb.offset = rightCS.length;
-                console.log(cb)
-                console.log(cb.offset)
               }
               for (let cb of rightCS) {
                 cb.offset = (leftCS.length * -1);
-                console.log(cb.offset);
               }
               leftCS = [stitch];
               rightCS = [];
             }
+          } else if (leftCS.length > 0) {
+            for (let cb of leftCS) {
+              cb.offset = rightCS.length;
+            }
+            for (let cb of rightCS) {
+              cb.offset = (leftCS.length * -1);
+            }
+            leftCS = [];
+            rightCS = [];
           }
+
           stitch.row = i;
           stitch.column = column;
           if (i > 0) {

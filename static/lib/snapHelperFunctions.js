@@ -4,6 +4,10 @@ Snap.plugin( function(Snap, Element, Paper, global) {
     return this.node.transform.baseVal.getItem(0).matrix;
   };
 
+  Element.prototype.setMatrix = function(matrix) {
+    this.node.transform.baseval.getItem(0).matrix = matrix
+  }
+
     //angles in degrees
   Element.prototype.skew = function( angleX, angleY ) {
     var m = this.getMatrix();

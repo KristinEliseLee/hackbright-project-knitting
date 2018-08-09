@@ -73,7 +73,7 @@ class SvgMain extends React.Component {
 
   renderStitch(s, stitch) {
     const outline = s.path(stitch.outline);
-    outline.attr({ 'fill-opacity': 0 });
+    outline.attr({ 'fill-opacity': 0, 'stroke': 'black', 'strokeWidth': 1});
     outline.addClass('outline');
     const mainColor = s.path(stitch.colorPath);
     mainColor.attr({ strokeWidth: 1 });
@@ -103,14 +103,16 @@ class SvgMain extends React.Component {
     for (let stitch of row) {
       this.renderStitch(s, stitch);
       stitch.image.transform(`translate(${horizontal},0)`);
-      let toSkew;
       if (stitch.cable) {
-        toSkew = 1;
-
-        if (stitch.offset < 0) {
-          toSkew = -1;
+        let opposite = Math.abs(stitch.width * stitch.offset);
+        console.log(opposite)
+        let adjacent = stitch.height;
+        let toSkew = Math.atan(opposite / adjacent) * (180 / Math.PI);
+        if (stitch.offset > 0) {
+          toSkew *= -1;
         }
-        stitch.image.skew(-32 * stitch.offset, 0);
+        console.log(toSkew)
+        stitch.image.skew(toSkew, 0);
         stitch.image.translate((stitch.width * stitch.offset), 0);
       }
       horizontal += stitch.width;
@@ -136,8 +138,18 @@ class SvgMain extends React.Component {
     for (let i = 0; i < this.props.colors.length; i += 1) {
       $(`.color${i}`).attr({ fill: this.props.colors[i] });
     }
-    $('.frontCable').attr({ 'fill-opacity':'100' });
-    $('.outline').attr({ stroke: 'black', strokeWidth: 1 })
+    let bc = $('.backCable').find('*');
+    bc.css({ 'opacity': .50 });
+    
+    $('.frontCable').attr({ fillOpacity: 100 });
+    // $('.outline').attr({ stroke: 'black', strokeWidth: 1 })
+    let frontCables = s.selectAll('.frontCable');
+    frontCables.forEach((el) => {
+      let trns = el.transform();
+      el.remove();
+      s.add(el);
+      el.attr({ transform: trns.globalMatrix });
+    });
   }
 
   componentDidUpdate() {
@@ -147,12 +159,20 @@ class SvgMain extends React.Component {
     for (let i = 0; i < this.props.colors.length; i += 1) {
       $(`.color${i}`).attr({ fill: this.props.colors[i] });
     }
-    $('.frontCable').attr({ 'fill-opacity':'100' });
-    // let frontCables = s.g(s.selectAll('.frontCable'));
-    // let backCables = s.g(s.selectAll('.backCable'))
-    // frontCables.after(backCables)
+    let bc = $('.backCable').find('*');
+    bc.css({ 'opacity': .50 });
+    let frontCables = s.selectAll('.frontCable');
+    console.log(frontCables);
+    frontCables.forEach((el) => {
+      let trns = el.transform();
+      console.log(trns);
+      el.remove();
 
-    $('.outline').attr({ stroke: 'black', strokeWidth: 1 })
+      s.add(el);
+      el.attr({ transform: trns.globalMatrix });
+      console.log(trns);
+    }); 
+
   }
 
   render() {
