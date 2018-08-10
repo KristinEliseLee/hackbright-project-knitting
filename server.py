@@ -1,5 +1,5 @@
 from flask import Flask, render_template, flash, redirect, request, session
-
+from passlib.hash import argon2
 from flask_debugtoolbar import DebugToolbarExtension
 import urllib
 from flask_sqlalchemy import SQLAlchemy
@@ -35,7 +35,7 @@ def register_user():
     """ Adds new user to the DB and logs them in"""
     form = RegistrationForm(request.form)
     if form.validate():
-        user = User(email=form.email.data, password=form.password.data)
+        user = User(email=form.email.data, password=argon2.hash(form.password.data))
         db.session.add(user)
         db.session.commit()
 
@@ -61,20 +61,6 @@ def login_user():
         flash('Logged In Successfully')
         return redirect('/user')
     return render_template('login.html', form=form)
-
-
-    # the below was for AJAX version, the above uses WTForms
-    # email = request.form.get('email')
-    # password = request.form.get('password')
-    # user = User.query.filter_by(email=email).first()
-    # if not user or user.password != password:
-    #     print('no')
-    #     return 'no'
-    # else:
-    #     session['user_id'] = user.user_id
-    #     flash("Successfully logged in")
-    #     print('yes')
-    #     return 'yes'
 
 @app.route('/logout')
 def logout_user():

@@ -25,7 +25,7 @@ function createTextOfPattern(rowStringsArray) {
   // Used to save the text of the pattern with row#'s.
   let answer = '';
   for (let i = 0; i < rowStringsArray.length; i += 1) {
-    answer += `Row${i + 1}: ${rowStringsArray[i].rowText}\n`;
+    answer += `Row${i + 1}: ${rowStringsArray[i]}\n`;
   }
   return answer;
 }
@@ -126,64 +126,11 @@ function parseColorGroups(rowText) {
   return colorGroups;
 }
 
-// function convertRowTextToColorGroups(str) {
-//   const colorGroups = [];
-//   // for list of all colorgroups 'C#(stitchgroups)'
-//   let currentGroup = '';
-//   // current colorgroup builder
-//   for (let char of str) {
-//     currentGroup += char.toUpperCase();
-//     if (char === ')') {
-//       colorGroups.push(currentGroup);
-//       currentGroup = '';
-//     }
-//   }
-//   // now have list of all colorgroup strings 'C#(stitchgroups)'
-//   for (let index = 0; index < colorGroups.length; index += 1) {
-//   // each colorgroup string
-//     const colorGroup = {};
-//     // initialize the colorgroup object
-//     let group = colorGroups[index];
-//     colorGroup.colorNum = group[ group.indexOf('C') + 1] - 1;
-//     // the color num is whatever is after the C
-//     // not gonna worry about more than 9 colors right now
-//     let justStitches = group.slice(group.indexOf('(') + 1, group.indexOf(')'));
-//     // take everything out of the parenthesis
-//     colorGroup.groups = [];
-//     let currentAbbr = '';
-//     let currentNum = '';
-//     for (let char of justStitches) {
-//     // go through all characters between the parenthesis
-//       if (isNaN(char) && char !== ' ') {
-//         if (currentNum.length > 0) {
-//           colorGroup.groups.push({ stitchAbbr: currentAbbr, numStitches: currentNum });
-//           currentAbbr = '';
-//           currentNum = '';
-//         }
-//         // if the character is a letter
-//         currentAbbr += char;
-//         // add it to the current abbreviation
-//       } else if (char !== ' ') {
-//       // if the character is a number
-//         currentNum += char;
-//         // start the current stitch number
-//       } else if (char === ' ') {
-//         colorGroup.groups.push({ stitchAbbr: currentAbbr, numStitches: currentNum });
-//         currentAbbr = '';
-//         currentNum = '';
-//       }
-//     } if (currentAbbr !== '') {
-//       colorGroup.groups.push({ stitchAbbr: currentAbbr, numStitches: currentNum });
-//     }colorGroups[index] = colorGroup;
-//   }
-//   return colorGroups;
-// }
-
 function makeStitchRows(rowsText) {
   // makes an array of arrays of stitch
   // may break this up into 2/3 methods
   const stitchRows = [];
-  const allRows = rowsText.map(x => parseColorGroups(x.rowText));
+  const allRows = rowsText.map(x => parseColorGroups(x));
   // allRows is an array of arrays
   for (let i = 0; i < allRows.length; i += 1) {
     // i is row index in allRows

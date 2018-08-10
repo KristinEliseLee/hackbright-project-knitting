@@ -1,6 +1,6 @@
 from wtforms import Form, BooleanField, StringField, PasswordField, validators
 from wtforms.validators import ValidationError
-
+from passlib.hash import argon2
 from model import connect_to_db, User, Pattern, UserLikesPattern
 
 class RegistrationForm(Form):
@@ -30,7 +30,7 @@ class LoginForm(Form):
     def validate_user_password_match(form, field):
         user = User.query.filter_by(email=form.email.data).first()
         if user:
-            if user.password != field.data:
+            if not argon2.verify(field.data, user.password):
                 raise ValidationError('Password does not match')
 
 
