@@ -67,6 +67,6 @@ if __name__ == '__main__':
     from server import app
 
     connect_to_db(app, 'knitpreviewproject')
-    # db.create_all()
+    db.create_all()
     # example_data()
-    print("Connected to DB.")
+    # print("Connected to DB.")

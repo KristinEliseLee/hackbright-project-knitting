@@ -1,12 +1,9 @@
 {% extends 'base.html' %}
 {% block HEAD %}<title>Patterns</title>{% endblock %}
 {% block BODY %}
-
-<form id="search" action="/patterns/search/results">
-    <input type="text" name="searchVal">
-    <input type="submit" value="Search">
-</form>
-<div id="results">
-</div>
-<script type="text/javascript" src='/static/js/patternsSeach.js'></script>
+<div id="root"></div>
+<script src="https://unpkg.com/react@16/umd/react.development.js" crossorigin></script>
+<script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+<script src="https://unpkg.com/react-dom@16/umd/react-dom.development.js" crossorigin></script>
+<script type="text/jsx" src='/static/js/patternsSearch.js'></script>
 {% endblock %}

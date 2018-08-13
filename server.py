@@ -11,7 +11,7 @@ from wtforms import Form, BooleanField, StringField, PasswordField, validators
 from wtforms.validators import ValidationError
 
 from forms import RegistrationForm, LoginForm
-
+import math
 
 app = Flask(__name__)
 app.secret_key = 'ABCSECRETDEF'
@@ -99,14 +99,19 @@ def show_search_form():
     return render_template('patterns_search.html')
 
 
-@app.route('/patterns/search/results')
+@app.route('/patterns/search/results.json')
 def get_search_results():
     """"""
     search_val = request.args.get('searchVal')
-    page = request.args.get('page')
-    patterns = db.session.query(Pattern.pattern_id, Pattern.pattern_name).filter(Pattern.pattern_name.ilike(f'%{search_val}%')).all()
-    pattern_dict = {'patterns': patterns}
-    return json.dumps(pattern_dict)
+    page = int(request.args.get('page', 1))
+    patterns = db.session.query(Pattern.pattern_id, Pattern.pattern_name, Pattern.pattern_url).filter(Pattern.pattern_name.ilike(f'%{search_val}%')).all()
+    patterns_num = len(patterns)
+    num_pages = math.ceil(len(patterns) / 1)
+    to_show = patterns[(1 * (page - 1)): (1 * page)]
+    pattern_dict = {'patterns': to_show, 'numResults': patterns_num, 'numPages': num_pages, 'page': page}
+    json_dict = json.dumps(pattern_dict)
+    print(json_dict)
+    return json_dict
 
 
 @app.route('/patterns/new')
