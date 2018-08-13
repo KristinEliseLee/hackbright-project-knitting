@@ -3,6 +3,7 @@ from passlib.hash import argon2
 from flask_debugtoolbar import DebugToolbarExtension
 import urllib
 from flask_sqlalchemy import SQLAlchemy
+import json
 
 from model import connect_to_db, User, Pattern, UserLikesPattern, db
 
@@ -80,12 +81,32 @@ def show_user_page():
 
         return redirect('/login')
 
+@app.route('/settings')
+def show_settings_page():
+    """"""
+
 
 @app.route('/patterns')
 def show_all_patterns():
     """ currently shows all patterns in no particular order"""
-    patterns = Pattern.query.all()
+    patterns = Pattern.query.order_by(Pattern.pattern_id).all()
     return render_template('patterns.html', patterns=patterns)
+
+
+@app.route('/patterns/search')
+def show_search_form():
+    """"""
+    return render_template('patterns_search.html')
+
+
+@app.route('/patterns/search/results')
+def get_search_results():
+    """"""
+    search_val = request.args.get('searchVal')
+    page = request.args.get('page')
+    patterns = db.session.query(Pattern.pattern_id, Pattern.pattern_name).filter(Pattern.pattern_name.ilike(f'%{search_val}%')).all()
+    pattern_dict = {'patterns': patterns}
+    return json.dumps(pattern_dict)
 
 
 @app.route('/patterns/new')
@@ -112,9 +133,9 @@ def show_pattern(pattern_id):
     else:
         to_like = 'like'
 
-    pattern_svg_info = open(pattern.pattern_url)
-    pattern_svg = pattern_svg_info.readline().rstrip();
-    return render_template('pattern.html', pattern=pattern, pattern_svg=pattern_svg, to_like=to_like)
+    # pattern_svg_info = open(pattern.pattern_url)
+    # pattern_svg = pattern_svg_info.readline().rstrip();
+    return render_template('pattern.html', pattern=pattern, to_like=to_like)
 
 
 @app.route('/patterns/<pattern_id>', methods=['POST'])
@@ -151,12 +172,13 @@ def save_pattern():
     db.session.commit()
     # Creates the file as {pattern_id}.txt
     # Cant create the file until pattern has a pattern_id.
-    save_file = open((f'patterns/{pattern.pattern_id}.txt'), 'w')
+    save_file = open((f'static/patternSVGs/{pattern.pattern_id}.svg'), 'w')
     save_file.write(svg_string)
     save_file.close()
-    pattern.pattern_url = (f'patterns/{pattern.pattern_id}.txt')
+    pattern.pattern_url = (f'/static/patternSVGs/{pattern.pattern_id}.svg')
     db.session.commit()
     # Gives back the pattern_id for redirect
+    print(pattern.pattern_url)
     return str(pattern.pattern_id)
 
 

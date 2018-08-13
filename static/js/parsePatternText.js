@@ -197,5 +197,6 @@ function makeStitchRows(rowsText) {
     }
     stitchRows.push(stitchRow);
   }
+  stitchRows.map(row => row.reverse())
   return stitchRows;
 }

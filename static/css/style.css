@@ -1,0 +1,26 @@
+/*#svgside {
+    height: 100%;
+    overflow-y: scroll;
+    padding: 0px 10%;
+    margin-top: 60px;
+    overflow-x: scroll;
+}
+
+#textside {
+    height: 100%;
+    overflow-y: scroll;
+    padding: 0px 10%;
+    margin-top: 60px;
+}
+*/
+
+footer {
+    height: 10%;
+    width: 100%;
+    bottom: 0;
+    position: absolute;
+    background-color: white;
+}
+#wholepage {
+    margin-bottom: 11%;
+}

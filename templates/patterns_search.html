@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+{% block HEAD %}<title>Patterns</title>{% endblock %}
+{% block BODY %}
+
+<form id="search" action="/patterns/search/results">
+    <input type="text" name="searchVal">
+    <input type="submit" value="Search">
+</form>
+<div id="results">
+</div>
+<script type="text/javascript" src='/static/js/patternsSeach.js'></script>
+{% endblock %}

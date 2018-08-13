@@ -31,11 +31,11 @@ class SvgMain extends React.PureComponent {
         let opposite = Math.abs(stitch.width * stitch.offset);
         let adjacent = stitch.height;
         let toSkew = Math.atan(opposite / adjacent) * (180 / Math.PI);
-        if (stitch.offset > 0) {
+        if (stitch.offset < 0) {
           toSkew *= -1;
         }
         stitch.image.skew(toSkew, 0);
-        stitch.image.translate((stitch.width * stitch.offset), 0);
+        stitch.image.translate((stitch.width * (-1 * stitch.offset)), 0);
       }
       horizontal += stitch.width;
       rowGroup.add(stitch.image);
@@ -90,7 +90,7 @@ class SvgMain extends React.PureComponent {
   }
 
   render() {
-    return (<svg id='svg' width='500px' height='500px' />);
+    return (<svg id='svg' width={`${this.props.width}px`} height={`${this.props.height}px`} />);
   }
 }
 
@@ -148,8 +148,8 @@ class App extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      rowsText: ['KNIT 5'],
-      rowsEdit: [{ edit: false }],
+      rowsText: ['C1K2 C2K2', 'C1CFK2 C2CBK2', 'C2K2 C1K2'],
+      rowsEdit: [{ edit: false }, { edit: false }, { edit: false }],
       colors: ['skyblue', 'pink'],
       colorVals: ['skyblue', 'pink'],
       name: ''};
@@ -272,6 +272,19 @@ class App extends React.Component {
     this.setState({ name: newState.name });
   }
 
+  calculateMaxWidth() {
+    let max = 0
+    for (let row of this.state.rowsStitches) {
+      if (row.length > max){
+        max = row.length
+      }
+    }
+    return (max * 19.8)
+  }
+
+  calculateMaxHeight() {
+    return (this.state.rowsStitches.length * 18)
+  }
 
   renderRows() {
     const allRows = [];
@@ -293,27 +306,36 @@ class App extends React.Component {
 
   render() {
     return (
-      <div className='row'>
-        <div id='textside' className='col-6'>
-          <h5> Colors</h5>
-          <button className='addColor' onClick={this.addColor}> + </button>
-          <button className='deleteColor' onClick={this.deleteColor}> - </button>
-          <ColorText colorVals={this.state.colorVals} handleChange={this.handleColorChange}
-            handleSubmit={this.handleColorSubmit}/>
-          <h5> Pattern Text </h5>
-          <div id='text'>
-            <button className='add' onClick={() => this.addTopRow()}>
-              +</button>
-            {this.renderRows()}
+      <React.Fragment>
+        <div className='row' id='wholepage'>
+          <div id='textside' className='col-6'>
+            <h5> Colors</h5>
+            <div id='colorboxes'>
+              <button className='addColor' onClick={this.addColor}> + </button>
+              <button className='deleteColor' onClick={this.deleteColor}> - </button>
+              <ColorText colorVals={this.state.colorVals} handleChange={this.handleColorChange}
+                handleSubmit={this.handleColorSubmit}/>
+            </div>
+            <h5> Pattern Text </h5>
+            <div id='text'>
+              <button className='add' onClick={() => this.addTopRow()}>
+                +</button>
+              {this.renderRows()}
 
+            </div>
+          </div>
+          <div id='svgside' className='col-6'>
+            <SvgMain key='1' width={this.calculateMaxWidth()} height={this.calculateMaxHeight()}
+              stitchRows={this.state.rowsStitches} colors={this.state.colors}/>
           </div>
         </div>
-        <div id='svgside' className='col-6'>
-          <SvgMain key='1' stitchRows={this.state.rowsStitches} colors={this.state.colors}/>
-          <SavePattern value={this.state.name} handleSubmit={this.handleSave}
-            handleChange={this.handleNameChange}/>
-        </div>
-      </div>
+        <footer className='fixed-bottom'>
+          <div className='offset-2'>
+            <SavePattern value={this.state.name} handleSubmit={this.handleSave}
+              handleChange={this.handleNameChange}/>
+          </div>
+        </footer>
+      </React.Fragment>
     );
   }
 }

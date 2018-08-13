@@ -1,12 +1,14 @@
 <!DOCTYPE html>
 <html>
 <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+<link rel="stylesheet" type="text/css" href="/static/css/style.css">
 
 <head>{% block HEAD %} {% endblock %}
 </head>
 <body>
     <div id="navbar"><a href="/">Home</a> |
       <a href="/patterns"> Patterns</a> |
+      <a href="/patterns/search"> Search </a> |
         {% if session.get("user_id")%}
         <a href="/patterns/new">New Pattern</a> |
         <a href="/user">Your page</a> |
