@@ -68,7 +68,12 @@ footer {
 }
 
 .colorBox {
-    width: 50%;
+    max-width: 50%;
+}
+
+.searchBar {
+    max-width:50%;
+
 }
 
 .outline {
@@ -86,4 +91,14 @@ footer {
     stroke-width:2;
     stroke: #84cc26;
     color: #84cc26;
+}
+
+.thumbnail {
+    max-width: 80px;
+    max-height: 80px;
+    height: auto;
+    width: auto;
+}
+h1, h2, h3, h4, h5, h6 {
+    text-align: center;
 }

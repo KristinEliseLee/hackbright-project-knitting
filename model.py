@@ -1,5 +1,7 @@
 
 from flask_sqlalchemy import SQLAlchemy
+from datetime import datetime
+from sqlalchemy.sql import func
 
 db = SQLAlchemy()
 
@@ -37,6 +39,7 @@ class Pattern(db.Model):
     pattern_text = db.Column(db.Text, nullable=False)
     pattern_url = db.Column(db.String(200))
     user_id = db.Column(db.Integer, db.ForeignKey('users.user_id'), nullable=False)
+    time_created = db.Column(db.DateTime, server_default=func.now())
     def __repr__(self):
         return f"<Pattern created by user_id {self.user_id} pattern_url: {self.pattern_url}>"
 
@@ -52,21 +55,10 @@ class UserLikesPattern(db.Model):
         return f"<Like user_id:{self.user_id} pattern_id:{self.pattern_id}>"
 
 
-
-# def example_data():
-#     user1 = User(email='potato@potato', password='password')
-#     user2 = User(email='tater@potato', password='safety')
-#     user3 = User(email='ptate@potato', password='secure')
-
-#     db.session.add_all([user1, user2, user3])
-#     db.session.commit()
-
-
 if __name__ == '__main__':
 
     from server import app
 
     connect_to_db(app, 'knitpreviewproject')
     db.create_all()
-    # example_data()
-    # print("Connected to DB.")
+

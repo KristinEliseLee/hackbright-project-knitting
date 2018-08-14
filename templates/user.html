@@ -1,35 +1,56 @@
 {% extends 'base.html' %}
 {% block HEAD %}<title>Your Page</title>{% endblock %}
-{% block BODY %} Your user page!
-
-
+{% block BODY %}
+<div class="row">
+    <div class="col-10 offset-1">
 <h4>Patterns you created:</h4>
 {% if user.created_patterns %}
-    <ul>
+    <table class="table col-10 offset-1">
     {% for pattern in user.created_patterns %}
-    <li>
-        <a href="/patterns/{{pattern.pattern_id}}">{{pattern.pattern_name}}</a>
-    </li>
+        <tr>
+            <td>
+                <a href="/patterns/{{pattern.pattern_id}}">{{pattern.pattern_name}}</a>
+            </td>
+            <td>
+                <a href="/patterns/{{pattern.pattern_id}}"><img src="{{pattern.pattern_url}}" class="thumbnail"></a>
+            </td>
+        </tr>
     {% endfor %}
-    </ul>
+    </table>
 {% else %}
+<p class="col-10 offset-1">
 You haven't made any patterns yet!
 <br>
 Make one <a href="/patterns/new">here</a>
+</p>
 {% endif %}
+</div>
+</div>
+<div class="row">
+    <div class="col-10 offset-1">
+
 <h4>Patterns you like:</h4>
 {% if user.likes %}
-    <ul>
+    <table class="table col-10 offset-1">
     {% for pattern in user.likes %}
-    <li>
-        <a href="/patterns/{{pattern.pattern_id}}">{{pattern.pattern_name}}</a>
-    </li>
+        <tr>
+            <td>
+                <a href="/patterns/{{pattern.pattern_id}}">{{pattern.pattern_name}}</a>
+            </td>
+            <td>
+                <a href="/patterns/{{pattern.pattern_id}}"><img src="{{pattern.pattern_url}}" class="thumbnail"></a>
+            </td>
+        </tr>
     {% endfor %}
-    </ul>
+    </table>
 {% else %}
+<p class="col-10 offset-1">
+<br>
 You haven't liked any patterns yet!
 <br>
 Check some out <a href="/patterns">here</a>
+</p>
 {% endif %}
-
+</div>
+</div>
 {% endblock %}

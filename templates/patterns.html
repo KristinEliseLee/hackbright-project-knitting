@@ -1,12 +1,17 @@
 {% extends 'base.html' %}
 {% block HEAD %}<title>Patterns</title>{% endblock %}
 {% block BODY %}
-All Patterns
-<ul>
+<h4>All Patterns</h4>
+<table class="table col-8 offset-2">
 {% for pattern in patterns %}
-<li>
+<tr>
+<td>
 <a href="/patterns/{{pattern.pattern_id}}">{{pattern.pattern_name}}</a>
-</li>
+</td>
+<td>
+<a href="/patterns/{{pattern.pattern_id}}"><img src="{{pattern.pattern_url}}" class="thumbnail"></a>
+</td>
+</tr>
 {% endfor %}
-</ul>
+</table>
 {% endblock %}

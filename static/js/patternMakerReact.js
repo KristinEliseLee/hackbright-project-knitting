@@ -2,10 +2,16 @@
 function rowHighlight(evt, rowNum) {
   if ($(evt.currentTarget).hasClass('highlight') && !$(evt.currentTarget).hasClass('rowEdit')) {
     $('.highlight').removeClass('highlight');
-    return null
+    return null;
   }
+  if ($(evt.currentTarget).hasClass('rowSave')) {
+    $('.highlight').removeClass('highlight');
+    return null;
+  }
+
   $('.highlight').removeClass('highlight');
   $(`.row${rowNum}`).addClass('highlight');
+  return null;
 }
 
 class SvgMain extends React.PureComponent {
@@ -150,10 +156,11 @@ function RowText(props) {
       evt.preventDefault();
       props.handleSubmit(props.rowNum);
     }}>
-      <input className='rowEdit' type='text' value={props.value}
+      <input type='text' value={props.value}
         onChange={(evt) => props.handleChange(evt, props.rowNum)} className={
-          `row${props.rowNum}`} onClick={(evt) => rowHighlight(evt, props.rowNum)}/>
-      <input type='submit' value='Save'/>
+          `row${props.rowNum} rowEdit`} onClick={(evt) => rowHighlight(evt, props.rowNum)}/>
+      <input type='submit' value='Save' className={
+          `row${props.rowNum} rowSave`} onClick={(evt) => rowHighlight(evt, props.rowNum)}/>
     </form>
     );
   }

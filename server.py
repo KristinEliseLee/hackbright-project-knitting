@@ -4,6 +4,8 @@ from flask_debugtoolbar import DebugToolbarExtension
 import urllib
 from flask_sqlalchemy import SQLAlchemy
 import json
+from sqlalchemy import desc
+from sqlalchemy import func
 
 from model import connect_to_db, User, Pattern, UserLikesPattern, db
 
@@ -21,8 +23,15 @@ connect_to_db(app, 'knitpreviewproject')
 
 @app.route('/')
 def show_homepage():
+    base_query = db.session.query(Pattern.pattern_id, Pattern.pattern_name,
+        Pattern.pattern_url)
 
-    return render_template('home.html')
+    latest = base_query.order_by(desc(Pattern.time_created)).limit(5).all()
+    most_liked = base_query.join(UserLikesPattern).group_by(Pattern.pattern_id,
+        Pattern.pattern_name, Pattern.pattern_url).order_by(desc(func.count(UserLikesPattern.like_id)
+        )).limit(5).all()
+
+    return render_template('home.html', latest=latest, most_liked=most_liked)
 
 
 @app.route('/register')
@@ -103,11 +112,12 @@ def show_search_form():
 def get_search_results():
     """"""
     search_val = request.args.get('searchVal')
+    per_page = 20
     page = int(request.args.get('page', 1))
     patterns = db.session.query(Pattern.pattern_id, Pattern.pattern_name, Pattern.pattern_url).filter(Pattern.pattern_name.ilike(f'%{search_val}%')).all()
     patterns_num = len(patterns)
-    num_pages = math.ceil(len(patterns) / 1)
-    to_show = patterns[(1 * (page - 1)): (1 * page)]
+    num_pages = math.ceil(len(patterns) / per_page)
+    to_show = patterns[(per_page * (page - 1)): (per_page * page)]
     pattern_dict = {'patterns': to_show, 'numResults': patterns_num, 'numPages': num_pages, 'page': page}
     json_dict = json.dumps(pattern_dict)
     print(json_dict)
