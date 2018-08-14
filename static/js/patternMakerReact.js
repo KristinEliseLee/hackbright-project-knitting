@@ -11,7 +11,7 @@ function rowHighlight(evt, rowNum) {
 class SvgMain extends React.PureComponent {
   renderStitch(s, stitch) {
     const outline = s.path(stitch.outline);
-    // outline.attr({ 'fill-opacity': 0, 'stroke': 'black', 'strokeWidth': 1 });
+    outline.attr({ 'fill-opacity': 0, 'stroke': 'black', 'strokeWidth': 1 });
     outline.addClass('outline');
     const mainColor = s.path(stitch.colorPath);
     mainColor.attr({ strokeWidth: 1 });
