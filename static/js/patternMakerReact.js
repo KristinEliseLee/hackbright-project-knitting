@@ -1,7 +1,6 @@
 /* global React ReactDOM makeStitchRows $:true*/
 function rowHighlight(evt, rowNum) {
-  if ($(evt.currentTarget).hasClass('highlight')) {
-    console.log(evt.target);
+  if ($(evt.currentTarget).hasClass('highlight') && !$(evt.currentTarget).hasClass('rowEdit')) {
     $('.highlight').removeClass('highlight');
     return null
   }
@@ -147,18 +146,21 @@ function ColorText(props) {
 
 function RowText(props) {
   if (props.edit === true) {
-    return (<form id={props.rowNum} className={`rowForm row${props.rowNum}`} onSubmit= {(evt)=> {
+    return (<form id={props.rowNum} onSubmit= {(evt)=> {
       evt.preventDefault();
       props.handleSubmit(props.rowNum);
     }}>
       <input className='rowEdit' type='text' value={props.value}
-        onChange={(evt) => props.handleChange(evt, props.rowNum)}/>
+        onChange={(evt) => props.handleChange(evt, props.rowNum)} className={
+          `row${props.rowNum}`} onClick={(evt) => rowHighlight(evt, props.rowNum)}/>
       <input type='submit' value='Save'/>
     </form>
     );
   }
-  return (<span key={props.rowNum} className={'row' + props.rowNum.toString()}>
-    {props.rowText} <button className='edit' onClick={()=> props.editRow(
+  return (<span key={props.rowNum} >
+    <span className={'row' + props.rowNum.toString()} onClick={
+      (evt) => rowHighlight(evt, props.rowNum)}> {props.rowText}</span>
+    <button className='edit' onClick={()=> props.editRow(
       props.rowNum)}>Edit</button></span>
   );
 }
@@ -311,9 +313,10 @@ class App extends React.Component {
     const allRows = [];
 
     for (let i = (this.state.rowsText.length - 1); i >= 0; i -= 1) {
-      allRows.push(<span key={i.toString()} className={`row${i}`}onClick={(evt) => rowHighlight(evt, i)}><br/><span className='delete'
-        onClick={() => this.deleteARow(i)}> - </span> {'Row' +
-        (i + 1).toString()}: <RowText edit={this.state.rowsEdit[i].edit} rowNum={i}
+      allRows.push(<span key={i.toString()} ><br/><span className='delete'
+        onClick={() => this.deleteARow(i)}> - </span> <span className={'row' + i}
+        onClick={(evt)=> rowHighlight(evt, i)}>{'Row' +
+        (i + 1).toString()}: </span><RowText edit={this.state.rowsEdit[i].edit} rowNum={i}
         handleSubmit={this.handleRowSubmit} handleChange={this.handleRowChange}
         rowText={this.state.rowsText[i]} value={this.state.rowsEdit[i].value} editRow={this.editRow}/>
       <br/>
