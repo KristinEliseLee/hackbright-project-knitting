@@ -1,9 +1,18 @@
 /* global React ReactDOM makeStitchRows $:true*/
+function rowHighlight(evt, rowNum) {
+  if ($(evt.currentTarget).hasClass('highlight')) {
+    console.log(evt.target);
+    $('.highlight').removeClass('highlight');
+    return null
+  }
+  $('.highlight').removeClass('highlight');
+  $(`.row${rowNum}`).addClass('highlight');
+}
 
 class SvgMain extends React.PureComponent {
   renderStitch(s, stitch) {
     const outline = s.path(stitch.outline);
-    outline.attr({ 'fill-opacity': 0, 'stroke': 'black', 'strokeWidth': 1 });
+    // outline.attr({ 'fill-opacity': 0, 'stroke': 'black', 'strokeWidth': 1 });
     outline.addClass('outline');
     const mainColor = s.path(stitch.colorPath);
     mainColor.attr({ strokeWidth: 1 });
@@ -40,6 +49,8 @@ class SvgMain extends React.PureComponent {
       horizontal += stitch.width;
       rowGroup.add(stitch.image);
     }
+    rowGroup.addClass(`row${rowNum}`)
+    rowGroup.click((evt) => rowHighlight(evt, rowNum));
     return rowGroup;
   }
 
@@ -59,14 +70,17 @@ class SvgMain extends React.PureComponent {
       $(`.color${i}`).attr({ fill: this.props.colors[i] });
     }
     let bc = $('.backCable').find('*');
-    bc.css({ opacity: .50 });
+    bc.css({ opacity: 0.50 });
     $('.frontCable').attr({ fillOpacity: 100 });
     let frontCables = s.selectAll('.frontCable');
     frontCables.forEach((el) => {
       let trns = el.transform();
+      const parentGroup = el.parent();
       el.remove();
       s.add(el);
-      el.attr({ transform: trns.globalMatrix });
+      parentGroup.add(el);
+      // el.attr({ transform: trns.globalMatrix });
+
     });
   }
 
@@ -82,10 +96,13 @@ class SvgMain extends React.PureComponent {
     let frontCables = s.selectAll('.frontCable');
     frontCables.forEach((el) => {
       let trns = el.transform();
+      const parentGroup = el.parent();
       el.remove();
 
       s.add(el);
-      el.attr({ transform: trns.globalMatrix });
+      parentGroup.add(el);
+      // el.attr({ transform: trns.globalMatrix });
+      
     });
   }
 
@@ -103,7 +120,7 @@ function SavePattern(props) {
     Name:
       <input type='text' required onChange={(evt) => props.handleChange(evt)}
         value={props.value}/>
-      <input type='submit' name='save'/>
+      <input type='submit' value='Save'/>
     </form>
   );
 }
@@ -121,7 +138,7 @@ function ColorText(props) {
           props.colorVals[i]} onChange={(evt) =>{
           props.handleChange(evt, i);
         }} />
-        <input type='submit' />
+        <input type='submit' value='Save' />
       </form>
     );
   }
@@ -130,17 +147,19 @@ function ColorText(props) {
 
 function RowText(props) {
   if (props.edit === true) {
-    return (<form id={props.id} onSubmit= {(evt)=> {
+    return (<form id={props.rowNum} className={`rowForm row${props.rowNum}`} onSubmit= {(evt)=> {
       evt.preventDefault();
       props.handleSubmit(props.rowNum);
     }}>
       <input className='rowEdit' type='text' value={props.value}
         onChange={(evt) => props.handleChange(evt, props.rowNum)}/>
-      <input type='submit' value='Save'/></form>
+      <input type='submit' value='Save'/>
+    </form>
     );
   }
-  return (<span className='rowText' id={'row' + props.rowNum.toString()}>
-    {props.rowText}</span>
+  return (<span key={props.rowNum} className={'row' + props.rowNum.toString()}>
+    {props.rowText} <button className='edit' onClick={()=> props.editRow(
+      props.rowNum)}>Edit</button></span>
   );
 }
 
@@ -254,6 +273,7 @@ class App extends React.Component {
   }
 
   handleSave() {
+    $('.highlight').removeClass('highlight');
     const s = Snap('#svg');
     const svgString = s.toString();
     const formData = new FormData();
@@ -286,19 +306,19 @@ class App extends React.Component {
     return (this.state.rowsStitches.length * 18)
   }
 
+
   renderRows() {
     const allRows = [];
 
     for (let i = (this.state.rowsText.length - 1); i >= 0; i -= 1) {
-      allRows.push(<span key={i.toString()}><button className='delete'
-        onClick={() => this.deleteARow(i)}> - </button> {'Row' +
+      allRows.push(<span key={i.toString()} className={`row${i}`}onClick={(evt) => rowHighlight(evt, i)}><br/><span className='delete'
+        onClick={() => this.deleteARow(i)}> - </span> {'Row' +
         (i + 1).toString()}: <RowText edit={this.state.rowsEdit[i].edit} rowNum={i}
         handleSubmit={this.handleRowSubmit} handleChange={this.handleRowChange}
-        rowText={this.state.rowsText[i]} value={this.state.rowsEdit[i].value}/>
-      <button className='edit' onClick={
-        ()=> this.editRow(i)}>Edit</button><br/>
-      <button className='add' onClick={() => this.addARow(i)}>
-      + </button>
+        rowText={this.state.rowsText[i]} value={this.state.rowsEdit[i].value} editRow={this.editRow}/>
+      <br/>
+      <span className='add' onClick={() => this.addARow(i)}>
+      + </span>
       </span>);
     }
     return allRows;
@@ -311,17 +331,16 @@ class App extends React.Component {
           <div id='textside' className='col-6'>
             <h5> Colors</h5>
             <div id='colorboxes'>
-              <button className='addColor' onClick={this.addColor}> + </button>
-              <button className='deleteColor' onClick={this.deleteColor}> - </button>
+              <span className='add' onClick={this.addColor}> + </span>
+              <span className='delete' onClick={this.deleteColor}> - </span>
               <ColorText colorVals={this.state.colorVals} handleChange={this.handleColorChange}
                 handleSubmit={this.handleColorSubmit}/>
             </div>
             <h5> Pattern Text </h5>
             <div id='text'>
-              <button className='add' onClick={() => this.addTopRow()}>
-                +</button>
+              <span className='add' onClick={() => this.addTopRow()}>
+                +</span>
               {this.renderRows()}
-
             </div>
           </div>
           <div id='svgside' className='col-6'>

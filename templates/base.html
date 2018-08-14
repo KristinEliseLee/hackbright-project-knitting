@@ -5,8 +5,11 @@
 
 <head>{% block HEAD %} {% endblock %}
 </head>
-<body>
-    <div id="navbar"><a href="/">Home</a> |
+<body class="wholeview">
+    <div id="navbar" class="navbar navbar-default navbar-fixed-top">
+      <div class="navbar-header">
+
+      <a href="/">Home</a> |
       <a href="/patterns"> Patterns</a> |
       <a href="/patterns/search"> Search </a> |
         {% if session.get("user_id")%}
@@ -16,12 +19,13 @@
         {% else %}
         <a href="/login"> Log In</a> or <a href="/register">Register</a>
 {% endif %}
-</div>
     <ul>
         {% for message in get_flashed_messages() %}
         <li>{{message}}</li>
         {% endfor %}
     </ul>
+  </div>
+</div>
 <script
   src="https://code.jquery.com/jquery-3.3.1.min.js"
   integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
@@ -29,5 +33,6 @@
   <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
   
 {% block BODY %} {% endblock %}
+
 </body>
 </html>

@@ -33,7 +33,7 @@ function DisplayPages(props) {
   // props - numPages, page
   const allPages = []
   if (props.page > 1) {
-    allPages.push(<span onClick={()=>props.onClick(props.page - 1)}> {'<<prev'} </span>
+    allPages.push(<span key='prev' className='pages' onClick={()=>props.onClick(props.page - 1)}> {'<<prev'} </span>
     );
   }
   for (let i = 1; i <= props.numPages; i += 1) {
@@ -47,7 +47,7 @@ function DisplayPages(props) {
     }
   }
   if (props.page < props.numPages) {
-    allPages.push(<span onClick={()=>props.onClick(props.page + 1)}> {'next>>'} </span>
+    allPages.push(<span key='next' className='pages' onClick={()=>props.onClick(props.page + 1)}> {'next>>'} </span>
     );
   }
   if (props.numPages > 0) {
@@ -88,9 +88,15 @@ class App extends React.Component {
     const newState = $.extend(true, {}, this.state);
     newState.page = page;
     newState.currentSearch = newState.searchVal
-    let data;
+    // fetch has problems with URL parameters
+    // let url = new URL('/patterns/search/results.json');
+    // let params = {searchVal: newState.searchVal, page: newState.page};
+    // url.search = new URLSearchParams(params);
+    // fetch(url)
+    // .then(response => response.json())
+    // .then(data => this.setSearchResults(data))
     $.get('/patterns/search/results.json', { searchVal: newState.searchVal, page: page },
-      (response) => { data = JSON.parse(response);
+      (response) => { let data = JSON.parse(response);
         this.setSearchResults(data);
       });
 

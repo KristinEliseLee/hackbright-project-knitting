@@ -1,26 +1,89 @@
-/*#svgside {
+
+#svgside {
     height: 100%;
-    overflow-y: scroll;
-    padding: 0px 10%;
-    margin-top: 60px;
-    overflow-x: scroll;
+    width:50%;
+    max-height: 100%;
+    max-width: 100%;
+    overflow-y: auto;
+    overflow-x: auto;
 }
 
 #textside {
     height: 100%;
-    overflow-y: scroll;
-    padding: 0px 10%;
-    margin-top: 60px;
+    max-height: 100%;
+    width:50%;
+    max-width: 100%;
+    overflow-y: auto;
+    overflow-x: auto;
 }
-*/
 
 footer {
-    height: 10%;
+    height: 7%;
     width: 100%;
     bottom: 0;
     position: absolute;
     background-color: white;
 }
+
 #wholepage {
-    margin-bottom: 11%;
+    position: absolute;
+    margin-bottom: 8%;
+    height:85%;
+    width: 100%;
+    overflow: hidden;
+}
+
+.wholeview {
+    margin: 0;
+    overflow: hidden;
+    height:100%;
+    max-height: 100%;
+    width:100%;
+    max-width: 100%;
+    position: absolute;
+}
+
+.rowForm {
+    display:inline;
+}
+
+.add {
+    color:#33cc33;
+    font-size: 14pt;
+    cursor:pointer;
+}
+
+.delete {
+    color:red;
+    font-size: 14pt;
+    cursor: pointer;
+}
+
+.add:hover {
+    text-decoration: none;
+}
+
+.delete:hover {
+    text-decoration: none;
+}
+
+.colorBox {
+    width: 50%;
+}
+
+.outline {
+    fill-opacity:0;
+    stroke:black;
+    stroke-width:1;
+}
+
+.highlight{
+    color: #84cc26;
+    font-weight:bold;
+}
+
+.highlight .outline{
+    stroke-width:3;
+    stroke: #84cc26;
+    color: #84cc26;
 }
