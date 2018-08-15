@@ -113,6 +113,7 @@ class App extends React.Component {
     return (<div>
       <div className='row'>
         <div className='col-6 offset-3'>
+        <h4> Search Pattern By Name </h4>
           <SearchBar onSubmit={this.handleSearch} onChange={this.handleSearchChange}
             value={this.state.value} />
         </div>

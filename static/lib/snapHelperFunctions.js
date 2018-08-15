@@ -1,18 +1,21 @@
 
 Snap.plugin( function(Snap, Element, Paper, global) {
-  Element.prototype.getMatrix = function(  ) {
+  Element.prototype.getMatrix = function() {
+    let parent = this.node.parentNode;
+    let blankTransform = parent.createSVGTransform();
+    this.node.transform.baseVal.appendItem(blankTransform);
     return this.node.transform.baseVal.getItem(0).matrix;
   };
 
-  Element.prototype.setMatrix = function(matrix) {
-    this.node.transform.baseval.getItem(0).matrix = matrix
-  }
+  Element.prototype.setMatrix = function (matrix) {
+    this.node.transform.baseval.getItem(0).matrix = matrix;
+  };
 
     //angles in degrees
-  Element.prototype.skew = function( angleX, angleY ) {
+  Element.prototype.skew = function ( angleX, angleY ) {
     var m = this.getMatrix();
-    m.b = Math.tan(angleY*Math.PI/180)
-    m.c = Math.tan(angleX*Math.PI/180)
+    m.b += Math.tan(angleY*Math.PI/180)
+    m.c += Math.tan(angleX*Math.PI/180)
   };
 
   Element.prototype.translate = function( x, y ) {

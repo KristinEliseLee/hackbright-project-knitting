@@ -17,12 +17,12 @@ import math
 
 app = Flask(__name__)
 app.secret_key = 'ABCSECRETDEF'
-# db = SQLAlchemy()
 connect_to_db(app, 'knitpreviewproject')
 
 
 @app.route('/')
 def show_homepage():
+    """shows the homepage with most recently created patterns and most liked patterns"""
     base_query = db.session.query(Pattern.pattern_id, Pattern.pattern_name,
         Pattern.pattern_url)
 
@@ -80,9 +80,8 @@ def logout_user():
 
 
 @app.route('/user')
-def show_user_page():
+def show_current_user_page():
     """ Shows the user page only if logged in"""
-
     user_id = session.get('user_id')
     if user_id:
         return render_template('user.html',user=User.query.get(user_id))
@@ -90,9 +89,17 @@ def show_user_page():
 
         return redirect('/login')
 
-@app.route('/settings')
-def show_settings_page():
-    """"""
+# @app.route('/settings')
+# def show_settings_page():
+#     """"""
+
+# @app.route('/users')
+# def show_list_of_users():
+#     """"""
+
+# @app.route('/users/<user_id>')
+# def show_user_id_page():
+#     """"""
 
 
 @app.route('/patterns')
@@ -147,9 +154,6 @@ def show_pattern(pattern_id):
         to_like = 'liked'
     else:
         to_like = 'like'
-
-    # pattern_svg_info = open(pattern.pattern_url)
-    # pattern_svg = pattern_svg_info.readline().rstrip();
     return render_template('pattern.html', pattern=pattern, to_like=to_like)
 
 

@@ -1,21 +1,27 @@
 /* global React ReactDOM makeStitchRows $:true*/
+
 function rowHighlight(evt, rowNum) {
+  // function highlights clicked row
   if ($(evt.currentTarget).hasClass('highlight') && !$(evt.currentTarget).hasClass('rowEdit')) {
+    // removes highlight upon clicking something already highlighted that isn't a row-edit box
     $('.highlight').removeClass('highlight');
     return null;
   }
   if ($(evt.currentTarget).hasClass('rowSave')) {
+    // Unhighlight on save row.
     $('.highlight').removeClass('highlight');
     return null;
   }
-
+  // highlight most recent row clicked only
   $('.highlight').removeClass('highlight');
   $(`.row${rowNum}`).addClass('highlight');
   return null;
 }
 
 class SvgMain extends React.PureComponent {
+  // Whole SVG component
   renderStitch(s, stitch) {
+    // Adds single stitch to SVG
     const outline = s.path(stitch.outline);
     outline.attr({ 'fill-opacity': 0, 'stroke': 'black', 'strokeWidth': 1 });
     outline.addClass('outline');
@@ -35,8 +41,9 @@ class SvgMain extends React.PureComponent {
   }
 
   renderRow(s, rows, rowNum) {
+    // adds whole row to SVG
     let row = rows[rowNum];
-    let horizontal = 0;
+    let horizontal = (this.props.width - row.length * 19.8);
     const rowGroup = s.g();
     for (let stitch of row) {
       this.renderStitch(s, stitch);
@@ -54,12 +61,13 @@ class SvgMain extends React.PureComponent {
       horizontal += stitch.width;
       rowGroup.add(stitch.image);
     }
-    rowGroup.addClass(`row${rowNum}`)
+    rowGroup.addClass(`row${rowNum}`);
     rowGroup.click((evt) => rowHighlight(evt, rowNum));
     return rowGroup;
   }
 
   renderRows(s, rows) {
+    // adds all rows to SVG
     let vertical = 0;
     for (let i = rows.length - 1; i >= 0; i -= 1) {
       let row = this.renderRow(s, rows, i);
@@ -68,8 +76,10 @@ class SvgMain extends React.PureComponent {
     }
   }
 
-  componentDidMount() {
+  updateAndMount() {
+    // This doesn't work in the render method, must run after initial render
     const s = Snap('#svg');
+    s.clear();
     this.renderRows(s, this.props.stitchRows);
     for (let i = 0; i < this.props.colors.length; i += 1) {
       $(`.color${i}`).attr({ fill: this.props.colors[i] });
@@ -84,31 +94,15 @@ class SvgMain extends React.PureComponent {
       el.remove();
       s.add(el);
       parentGroup.add(el);
-      // el.attr({ transform: trns.globalMatrix });
-
     });
   }
 
   componentDidUpdate() {
-    const s = Snap('#svg');
-    s.clear();
-    this.renderRows(s, this.props.stitchRows);
-    for (let i = 0; i < this.props.colors.length; i += 1) {
-      $(`.color${i}`).attr({ fill: this.props.colors[i] });
-    }
-    let bc = $('.backCable').find('*');
-    bc.css({ opacity: 0.50 });
-    let frontCables = s.selectAll('.frontCable');
-    frontCables.forEach((el) => {
-      let trns = el.transform();
-      const parentGroup = el.parent();
-      el.remove();
+    this.updateAndMount();
+  }
 
-      s.add(el);
-      parentGroup.add(el);
-      // el.attr({ transform: trns.globalMatrix });
-      
-    });
+  componentDidMount() {
+    this.updateAndMount();
   }
 
   render() {
@@ -118,6 +112,7 @@ class SvgMain extends React.PureComponent {
 
 
 function SavePattern(props) {
+  // creates name and save form for saving pattern
   return (
     <form id='savePattern' onSubmit={(evt) => {
       evt.preventDefault(); props.handleSubmit();
@@ -132,6 +127,7 @@ function SavePattern(props) {
 
 
 function ColorText(props) {
+  // Renders the color text boxes
   const colorBoxes = [];
   for (let i = 0; i < props.colorVals.length; i += 1) {
     colorBoxes.push(
@@ -151,6 +147,7 @@ function ColorText(props) {
 }
 
 function RowText(props) {
+  // Renders a row of text, with an edit button, or a textbox with a save button
   if (props.edit === true) {
     return (<form id={props.rowNum} onSubmit= {(evt)=> {
       evt.preventDefault();
@@ -160,7 +157,7 @@ function RowText(props) {
         onChange={(evt) => props.handleChange(evt, props.rowNum)} className={
           `row${props.rowNum} rowEdit`} onClick={(evt) => rowHighlight(evt, props.rowNum)}/>
       <input type='submit' value='Save' className={
-          `row${props.rowNum} rowSave`} onClick={(evt) => rowHighlight(evt, props.rowNum)}/>
+        `row${props.rowNum} rowSave`} onClick={(evt) => rowHighlight(evt, props.rowNum)}/>
     </form>
     );
   }
@@ -180,7 +177,7 @@ class App extends React.Component {
       rowsEdit: [{ edit: false }, { edit: false }, { edit: false }],
       colors: ['skyblue', 'pink'],
       colorVals: ['skyblue', 'pink'],
-      name: ''};
+      name: '' };
     this.handleRowSubmit = this.handleRowSubmit.bind(this);
     this.handleRowChange = this.handleRowChange.bind(this);
     this.addARow = this.addARow.bind(this);
@@ -194,10 +191,12 @@ class App extends React.Component {
     this.handleNameChange = this.handleNameChange.bind(this);
   }
   componentWillMount() {
-    this.state.rowsStitches = makeStitchRows(this.state.rowsText)
+    // Adds all stitches to state
+    this.state.rowsStitches = makeStitchRows(this.state.rowsText);
   }
 
   addTopRow() {
+    // handles adding a top row (row 1 is bottom)
     const newState = $.extend(true, {}, this.state);
     newState.rowsText.push('');
     newState.rowsEdit.push({ edit: true, value: '' });
@@ -208,6 +207,7 @@ class App extends React.Component {
   }
 
   addARow(index) {
+    // handles adding a row in the middle of the pattern, or the bottom
     const newState = $.extend(true, {}, this.state);
     newState.rowsText.splice(index, 0, '');
     newState.rowsEdit.splice(index, 0, { edit: true, value: '' });
@@ -218,6 +218,7 @@ class App extends React.Component {
   }
 
   deleteARow(index) {
+    // handles deleting any row
     const newState = $.extend(true, {}, this.state);
     newState.rowsText.splice(index, 1);
     newState.rowsEdit.splice(index, 1);
@@ -228,6 +229,7 @@ class App extends React.Component {
   }
 
   editRow(index) {
+    // sets the row's edit status to 'true'
     const newState = $.extend(true, {}, this.state);
     newState.rowsEdit[index].edit = true;
     newState.rowsEdit[index].value = newState.rowsText[index];
@@ -235,12 +237,14 @@ class App extends React.Component {
   }
 
   handleRowChange(evt, index) {
+    // Handles changing text for the row
     const newState = $.extend(true, {}, this.state);
     newState.rowsEdit[index].value = evt.target.value;
     this.setState({ rowsEdit: newState.rowsEdit });
   }
 
   handleRowSubmit(i) {
+    // handles saving of row text after editing
     const newState = $.extend(true, {}, this.state);
     newState.rowsEdit[i].edit = false;
     newState.rowsText[i] = newState.rowsEdit[i].value.toUpperCase();
@@ -251,6 +255,7 @@ class App extends React.Component {
   }
 
   addColor() {
+    // adds a color field box
     const newState = $.extend(true, {}, this.state);
     if (newState.colors.length < 9) {
       newState.colors.push('');
@@ -260,6 +265,7 @@ class App extends React.Component {
   }
 
   deleteColor() {
+    // removes a color field box
     const newState = $.extend(true, {}, this.state);
     if (newState.colors.length > 1) {
       newState.colors.pop();
@@ -269,12 +275,14 @@ class App extends React.Component {
   }
 
   handleColorChange(evt, i) {
+    // handles editing of color field
     const newState = $.extend(true, {}, this.state);
     newState.colorVals[i] = evt.target.value.replace(/ /g, '');
     this.setState({ colorVals: newState.colorVals });
   }
 
   handleColorSubmit(i) {
+    // Pushes the color change through after editing
     const newState = $.extend(true, {}, this.state);
     newState.colorVals[i] = newState.colorVals[i].replace(/\s/g, '');
     newState.colors[i] = newState.colorVals[i];
@@ -282,6 +290,7 @@ class App extends React.Component {
   }
 
   handleSave() {
+    // handles saving the pattern to the database and relocating to it's page
     $('.highlight').removeClass('highlight');
     const s = Snap('#svg');
     const svgString = s.toString();
@@ -296,12 +305,14 @@ class App extends React.Component {
   }
 
   handleNameChange(evt) {
+    // Handles editing pattern name
     const newState = $.extend(true, {}, this.state);
     newState.name = evt.target.value;
     this.setState({ name: newState.name });
   }
 
   calculateMaxWidth() {
+    // used to find how wide the SVG should be
     let max = 0
     for (let row of this.state.rowsStitches) {
       if (row.length > max){
@@ -312,11 +323,13 @@ class App extends React.Component {
   }
 
   calculateMaxHeight() {
+    // used to find how tall the SVG should be
     return (this.state.rowsStitches.length * 18)
   }
 
 
   renderRows() {
+    // makes all row text lines
     const allRows = [];
 
     for (let i = (this.state.rowsText.length - 1); i >= 0; i -= 1) {
@@ -335,6 +348,7 @@ class App extends React.Component {
   }
 
   render() {
+    // whole page
     return (
       <React.Fragment>
         <div className='row' id='wholepage'>

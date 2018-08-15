@@ -101,4 +101,24 @@ footer {
 }
 h1, h2, h3, h4, h5, h6 {
     text-align: center;
+    margin:auto;
+}
+
+.like {
+    text-align:center;
+    margin:auto;
+    cursor: pointer;
+}
+
+#like {
+    color: grey;
+}
+
+#liked {
+    color: #F35378;
+}
+
+.half {
+    margin-left: 5%;
+    margin-right: 5%;
 }

@@ -2,10 +2,10 @@
 {% block HEAD %}<title>Your Page</title>{% endblock %}
 {% block BODY %}
 <div class="row">
-    <div class="col-10 offset-1">
+    <div class="col-6">
 <h4>Patterns you created:</h4>
 {% if user.created_patterns %}
-    <table class="table col-10 offset-1">
+    <table class="table">
     {% for pattern in user.created_patterns %}
         <tr>
             <td>
@@ -18,39 +18,36 @@
     {% endfor %}
     </table>
 {% else %}
-<p class="col-10 offset-1">
+<p class="col-6">
 You haven't made any patterns yet!
 <br>
 Make one <a href="/patterns/new">here</a>
 </p>
 {% endif %}
 </div>
-</div>
-<div class="row">
-    <div class="col-10 offset-1">
-
-<h4>Patterns you like:</h4>
-{% if user.likes %}
-    <table class="table col-10 offset-1">
-    {% for pattern in user.likes %}
-        <tr>
-            <td>
-                <a href="/patterns/{{pattern.pattern_id}}">{{pattern.pattern_name}}</a>
-            </td>
-            <td>
-                <a href="/patterns/{{pattern.pattern_id}}"><img src="{{pattern.pattern_url}}" class="thumbnail"></a>
-            </td>
-        </tr>
-    {% endfor %}
-    </table>
-{% else %}
-<p class="col-10 offset-1">
-<br>
-You haven't liked any patterns yet!
-<br>
-Check some out <a href="/patterns">here</a>
-</p>
-{% endif %}
+<div class="col-6">
+    <h4>Patterns you like:</h4>
+    {% if user.likes %}
+        <table class="table">
+            {% for pattern in user.likes %}
+                <tr>
+                    <td>
+                        <a href="/patterns/{{pattern.pattern_id}}">{{pattern.pattern_name}}</a>
+                    </td>
+                    <td>
+                        <a href="/patterns/{{pattern.pattern_id}}"><img src="{{pattern.pattern_url}}" class="thumbnail"></a>
+                    </td>
+                </tr>
+            {% endfor %}
+        </table>
+    {% else %}
+        <p>
+            <br>
+            You haven't liked any patterns yet!
+            <br>
+            Check some out <a href="/patterns">here</a>
+            </p>
+    {% endif %}
 </div>
 </div>
 {% endblock %}
