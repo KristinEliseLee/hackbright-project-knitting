@@ -1,4 +1,4 @@
-from flask import Flask, render_template, flash, redirect, request, session
+from flask import Flask, render_template, flash, redirect, request, session, jsonify
 from flask_debugtoolbar import DebugToolbarExtension
 from model import connect_to_db, User, Pattern, UserLikesPattern, db
 from forms import RegistrationForm, LoginForm
@@ -32,8 +32,8 @@ def register_user():
         user_id = register_new_user(form.email.data.lower(), form.password.data)
         session['user_id'] = user_id
         flash('Registered Successfully')
-        return redirect('/user')
-    return render_template('register.html', form=form)
+        
+    return jsonify(data=form.errors)
 
 
 @app.route('/login')
@@ -50,8 +50,7 @@ def login_user():
         user = User.query.filter_by(email=form.email.data).first()
         session['user_id'] = user.user_id
         flash('Logged In Successfully')
-        return redirect('/user')
-    return render_template('login.html', form=form)
+    return jsonify(data=form.errors)
 
 @app.route('/logout')
 def logout_user():

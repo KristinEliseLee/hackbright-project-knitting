@@ -3,48 +3,13 @@
 {% block HEAD %}<title>Login</title>{% endblock %}
 {% block BODY %}
 {% from "_formhelpers.html" import render_field %}
-<form method=post>
+<form id="login">
   <dl>
     {{ render_field(form.email) }}
     {{ render_field(form.password) }}
   </dl>
   <p><input type=submit value=Login>
 </form>
-
-
-<!-- the below was for AJAX version, the above uses WTForms
-
-<form id="login" action="/login", method="POST">
-    Email
-    <input id="email" type="text" required name="email">
-    Password
-    <input id="password" type="text" required name="password">
-    <input type="submit">
-</form>
-<script>
-    function loginUser(result){
-        if(result == 'yes'){
-            window.location.replace('/user');
-            }
-        else{
-            alert('Email and password do not match');
-            }
-        }
-
-    function checkLogin(evt){
-        evt.preventDefault();
-        const formValues = {
-            'email' : $('#qemail').val(),
-            'password': $('#password').val()
-        };
-        console.log($('#email').val())
-
-        // const formValues = $('#login').serialize();
-        $.post('/login', formValues, loginUser);
-    }
-
-    $('#login').on('submit',checkLogin)
-
-</script> -->
+<script type="text/javascript" src="/static/js/login.js"></script>
 
 {% endblock %}

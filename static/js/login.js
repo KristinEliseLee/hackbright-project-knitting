@@ -2,6 +2,8 @@
 
 function handleResults(results) {
   const data = results.data;
+  // const data = JSON.parse(results);
+  // console.log(data);
   let fieldsWithErrors = Object.keys(data);
   if (fieldsWithErrors.length > 1) {
     for (let field of fieldsWithErrors) {
@@ -11,18 +13,18 @@ function handleResults(results) {
       }
     }
   } else {
-    window.location.replace('/user')
+    window.location.replace('/user');
   }
 }
 
 function handleSubmit(evt) {
   evt.preventDefault();
   $('.errors').remove();
-  const formData = $('#register').serialize();
+  const formData = $('#login').serialize();
   $('#password').value = '';
-  $('#confirm').value = '';
+  // $('#confirm').value = '';
 
-  $.post('/register', formData, handleResults);
+  $.post('/login', formData, handleResults);
 }
 
-$('#register').submit(handleSubmit);
+$('#login').submit(handleSubmit);

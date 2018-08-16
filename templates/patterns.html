@@ -1,17 +1,9 @@
 {% extends 'base.html' %}
 {% block HEAD %}<title>Patterns</title>{% endblock %}
 {% block BODY %}
-<h4>All Patterns</h4>
-<table class="table col-8 offset-2">
-{% for pattern in patterns %}
-<tr>
-<td>
-<a href="/patterns/{{pattern.pattern_id}}">{{pattern.pattern_name}}</a>
-</td>
-<td>
-<a href="/patterns/{{pattern.pattern_id}}"><img src="{{pattern.pattern_url}}" class="thumbnail"></a>
-</td>
-</tr>
-{% endfor %}
-</table>
+<div id="root"></div>
+<script src="https://unpkg.com/react@16/umd/react.development.js" crossorigin></script>
+<script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+<script src="https://unpkg.com/react-dom@16/umd/react-dom.development.js" crossorigin></script>
+<script type="text/jsx" src='/static/js/patternsList.js'></script>
 {% endblock %}

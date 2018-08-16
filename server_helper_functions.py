@@ -36,7 +36,7 @@ def make_search_json(search_val,page, per_page=20):
     """ Create a JSON with requested search information"""
     patterns = db.session.query(Pattern.pattern_id, Pattern.pattern_name,
         Pattern.pattern_url).filter(Pattern.pattern_name.ilike(
-            f'%{search_val}%')).all()
+            f'%{search_val}%')).order_by(desc(Pattern.time_created)).all()
     patterns_num = len(patterns)
     num_pages = math.ceil(len(patterns) / per_page)
     to_show = patterns[(per_page * (page - 1)): (per_page * page)]
