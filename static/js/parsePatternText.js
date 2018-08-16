@@ -1,4 +1,4 @@
-
+/* global letterToStitch :true*/
 
 const colorAbbrs = { C: 'yes', COLOR: 'also yes' };
 
@@ -145,7 +145,12 @@ function makeStitchRows(rowsText) {
       for (let k of allRows[i][j].groups) {
         // k is an object in the array allRows[i][j].groups
         for (let count = 0; count < k.numStitches; count += 1) {
-          let stitch = new letterToStitch[k.stitchAbbr]();
+          let stitch;
+          if (letterToStitch[k.stitchAbbr] !== undefined ) {
+            stitch = new letterToStitch[k.stitchAbbr]();
+          } else {
+            stitch = new letterToStitch['K']();
+          }
           stitch.colorClass = `color${colorNum}`;
           if (stitch.cable) {
             if (leftCS.length === 0 || leftCS[0].name === stitch.name) {

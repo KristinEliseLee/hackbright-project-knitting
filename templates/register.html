@@ -2,7 +2,7 @@
 {% block HEAD %}<title>Register</title>{% endblock %}
 {% block BODY %}
 {% from "_formhelpers.html" import render_field %}
-<form method=post>
+<form id="register">
   <dl>
     {{ render_field(form.email) }}
     {{ render_field(form.password) }}
@@ -10,5 +10,5 @@
   </dl>
   <p><input type=submit value=Register>
 </form>
-
+<script type="text/javascript" src="/static/js/register.js"></script>
 {% endblock %}

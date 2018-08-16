@@ -1,7 +1,7 @@
 from wtforms import Form, BooleanField, StringField, PasswordField, validators
 from wtforms.validators import ValidationError
 from passlib.hash import argon2
-from model import connect_to_db, User, Pattern, UserLikesPattern
+from model import  User, Pattern, UserLikesPattern
 
 class RegistrationForm(Form):
 
@@ -20,19 +20,17 @@ class RegistrationForm(Form):
     ])
     confirm = PasswordField('Repeat Password')
 
-
 class LoginForm(Form):
 
     def validate_user_exists(form, field):
-        if not User.query.filter_by(email=field.data).first():
+        if not User.query.filter_by(email=field.data.lower()).first():
             raise ValidationError('User not found')
 
     def validate_user_password_match(form, field):
-        user = User.query.filter_by(email=form.email.data).first()
+        user = User.query.filter_by(email=form.email.data.lower()).first()
         if user:
             if not argon2.verify(field.data, user.password):
                 raise ValidationError('Password does not match')
-
 
     email = StringField('Email Address', [
         validators.InputRequired(),
@@ -44,6 +42,3 @@ class LoginForm(Form):
         validate_user_password_match,
         validators.Length(min=6, max=50)
         ])
-
-    
-

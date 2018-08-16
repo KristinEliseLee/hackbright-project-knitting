@@ -3,7 +3,7 @@
 {% block BODY %}
 <div class="row">
     <div class="col-6">
-<h4>Patterns you created:</h4>
+<h4>Patterns You Created:</h4>
 {% if user.created_patterns %}
     <table class="table">
     {% for pattern in user.created_patterns %}
@@ -18,7 +18,8 @@
     {% endfor %}
     </table>
 {% else %}
-<p class="col-6">
+<p>
+<br>
 You haven't made any patterns yet!
 <br>
 Make one <a href="/patterns/new">here</a>
@@ -26,7 +27,7 @@ Make one <a href="/patterns/new">here</a>
 {% endif %}
 </div>
 <div class="col-6">
-    <h4>Patterns you like:</h4>
+    <h4>Patterns You Like:</h4>
     {% if user.likes %}
         <table class="table">
             {% for pattern in user.likes %}
