@@ -23,7 +23,7 @@ class DBTestCase(unittest.TestCase):
 
     def test_get_newest(self):
         """ create a new pattern, that pattern should be newest"""
-        user = User.query.filter(User.email == 'potato@potato').first()
+        user = User.query.filter(User.email == 'potato@potato').one()
         pattern_new = Pattern(pattern_name='new', user_id=user.user_id, pattern_text='new')
         db.session.add(pattern_new)
         db.session.commit()
@@ -43,7 +43,7 @@ class DBTestCase(unittest.TestCase):
         email = 'otatopay@potato'
         password='thisissafe'
         shf.register_new_user(email, password)
-        user = User.query.filter(User.email == email).first()
+        user = User.query.filter(User.email == email).one()
         self.assertTrue(user)
         self.assertNotEqual(password, user.password)
         self.assertTrue(argon2.verify(password, user.password))
@@ -51,8 +51,8 @@ class DBTestCase(unittest.TestCase):
 
     def test_unlike_pattern(self):
         # in test data user with email 'fry@potato' liked pattern named 'Purl'
-        pattern = Pattern.query.filter(Pattern.pattern_name == 'Purl').first()
-        user = User.query.filter(User.email == 'fry@potato').first()
+        pattern = Pattern.query.filter(Pattern.pattern_name == 'Purl').one()
+        user = User.query.filter(User.email == 'fry@potato').one()
         self.assertIn(pattern, user.likes)
         shf.unlike_pattern(user.user_id, pattern.pattern_id)
         self.assertNotIn(pattern, user.likes)
@@ -60,15 +60,15 @@ class DBTestCase(unittest.TestCase):
 
     def test_like_pattern(self):
         # in test data user with email 'fry@potato' did not like pattern named 'Knit'
-        pattern = Pattern.query.filter(Pattern.pattern_name == 'Knit').first()
-        user = User.query.filter(User.email == 'fry@potato').first()
+        pattern = Pattern.query.filter(Pattern.pattern_name == 'Knit').one()
+        user = User.query.filter(User.email == 'fry@potato').one()
         self.assertNotIn(pattern, user.likes)
         shf.like_pattern(user.user_id, pattern.pattern_id)
         self.assertIn(pattern, user.likes)
 
 
     def test_save_new_pattern(self):
-        user = User.query.filter(User.email == 'fry@potato').first()
+        user = User.query.filter(User.email == 'fry@potato').one()
         pattern_name = 'new_save'
         pattern_svg = 'would be SVG code'
         pattern_text = 'knit instructions'
@@ -103,7 +103,7 @@ class FlaskTestCase(unittest.TestCase):
         self.assertIn(b'patternsSearch.js', result.data)
 
     def test_pattern_page_shows(self):
-        pattern = Pattern.query.filter(Pattern.pattern_name=='Purl').first()
+        pattern = Pattern.query.filter(Pattern.pattern_name=='Purl').one()
         result = self.client.get(f'/patterns/{pattern.pattern_id}')
         self.assertIn(b'Purl', result.data)
         self.assertIn(b'Row1: P10', result.data)
@@ -114,9 +114,21 @@ class FlaskTestCase(unittest.TestCase):
         self.assertNotIn(b'Repeat Password', result.data)
 
     def test_login(self):
-        result = self.client.post('/login', data={'email': 'potato@potato',
-          'password': 'password'}, follow_redirects=True)
-        self.assertIn(b'Patterns You Created', result.data)        
+        # the correct password for potato is password
+        user = User.query.filter(User.email == 'potato@potato').one()
+        result = self.client.post('/login', data={'email': user.email,
+          'password': 'password'})
+        with self.client as c:
+            with c.session_transaction() as sess:
+                self.assertEqual(sess.get('user_id'), user.user_id)
+
+    def test_bad_login(self):
+        user = User.query.filter(User.email == 'potato@potato').one()
+        result = self.client.post('/login', data={'email': user.email,
+          'password': 'not the correct password'})
+        with self.client as c:
+            with c.session_transaction() as sess:
+                self.assertIsNone(sess.get('user_id'))
 
     def test_register_page_shows(self):
         result = self.client.get('/register')
@@ -124,8 +136,15 @@ class FlaskTestCase(unittest.TestCase):
 
     def test_register_user(self):
         result = self.client.post('/register', data={'email': 'testemail@email',
-          'password': 'totalysecret', 'confirm': 'totalysecret'}, follow_redirects=True)
-        self.assertIn(b'Patterns You Created', result.data)
+          'password': 'totalysecret', 'confirm': 'totalysecret'})
+        user = User.query.filter(User.email == 'testemail@email').one()
+        self.assertTrue(user)
+
+    def test_bad_register_user(self):
+        result = self.client.post('/register', data={'email': 'potato@potato',
+          'password': 'nope', 'confirm': 'no'})
+        user = User.query.filter(User.email == 'testemail@email').first()
+        self.assertFalse(user)
 
     def test_user_logged_out_user_page(self):
         result = self.client.get('/user', follow_redirects = True)
@@ -138,7 +157,7 @@ class FlaskTestCase(unittest.TestCase):
         self.assertIn(b'Email Address', result.data)
 
     def test_user_logged_in_user_page(self):
-        user = User.query.filter(User.email=='fry@potato').first()
+        user = User.query.filter(User.email=='fry@potato').one()
         with self.client as c:
             with c.session_transaction() as sess:
                 sess['user_id'] = user.user_id
@@ -147,13 +166,33 @@ class FlaskTestCase(unittest.TestCase):
         self.assertNotIn(b'Email Address', result.data)
 
     def test_user_logged_in_new_pattern_page(self):
-        user = User.query.filter(User.email=='fry@potato').first()
+        user = User.query.filter(User.email=='fry@potato').one()
         with self.client as c:
             with c.session_transaction() as sess:
                 sess['user_id'] = user.user_id
         result = self.client.get('/patterns/new', follow_redirects = True)
         self.assertIn(b'patternMakerReact.js', result.data)
         self.assertNotIn(b'Email Address', result.data)
+
+    def test_pattern_save(self):
+        user = User.query.filter(User.email == 'fry@potato').one()
+        pattern_name = 'new_save'
+        pattern_svg = 'would be SVG code'
+        pattern_text = 'knit instructions'
+        self.assertEqual(Pattern.query.filter(Pattern.pattern_name == pattern_name).all(),[])
+        with self.client as c:
+            with c.session_transaction() as sess:
+                sess['user_id'] = user.user_id
+        result = self.client.post('/save', data = {'patternText': pattern_text,
+            'svgString': pattern_svg, 'name': pattern_name})
+        pattern = Pattern.query.get(int(result.data))
+        self.assertTrue(pattern)
+        self.assertEqual(pattern.pattern_name,pattern_name)
+        self.assertEqual(pattern.user_id,user.user_id)
+        file = open(f'static/patternSVGs/{pattern.pattern_id}.svg')
+        text = file.readline()
+        file.close()
+        self.assertEqual(text,pattern_svg)
 
 
 if __name__ == '__main__':
