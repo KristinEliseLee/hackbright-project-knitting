@@ -1,22 +1,71 @@
-/* global React ReactDOM makeStitchRows $:true*/
-
-function rowHighlight(evt, rowNum) {
-  // function highlights clicked row
-  if ($(evt.currentTarget).hasClass('highlight') && !$(evt.currentTarget).hasClass('rowEdit')) {
-    // removes highlight upon clicking something already highlighted that isn't a row-edit box
-    $('.highlight').removeClass('highlight');
-    return null;
-  }
-  if ($(evt.currentTarget).hasClass('rowSave')) {
-    // Unhighlight on save row.
-    $('.highlight').removeClass('highlight');
-    return null;
-  }
-  // highlight most recent row clicked only
-  $('.highlight').removeClass('highlight');
-  $(`.row${rowNum}`).addClass('highlight');
-  return null;
+function ColorHelpModal(props) {
+  return (
+    <div>
+      <Reactstrap.Modal isOpen={props.show} toggle={props.onClick} className='colorHelp'>
+        <Reactstrap.ModalHeader toggle={props.onclick}>Colors</Reactstrap.ModalHeader>
+        <Reactstrap.ModalBody>
+          <h4>Basics</h4>
+          <p>
+            Click the "+" or "-" to add or remove colors<br/>
+            Colors can be any CSS color - by name or hexcode.
+            e.g."green" or "#00FF00"
+          </p>
+        </Reactstrap.ModalBody>
+        <Reactstrap.ModalFooter>
+          <Reactstrap.Button color="secondary" onClick={props.onClick}>Cancel</Reactstrap.Button>
+        </Reactstrap.ModalFooter>
+      </Reactstrap.Modal>
+    </div>
+  );
 }
+function RowHelpModal(props) {
+  return (
+    <div>
+      <Reactstrap.Modal isOpen={props.show} toggle={props.onClick} className='rowHelp'>
+        <Reactstrap.ModalHeader toggle={props.onclick}>Rows</Reactstrap.ModalHeader>
+        <Reactstrap.ModalBody>
+          <h4>Basics</h4>
+          <p>
+            Click the "+" or "-" to add or remove rows<br/>
+            Enter row information in the format "Color (color number) (stitch name) (number of stitches)"
+            <br/>
+            "Color 2 Knit 5 Color 1 Purl 3" or "C2K5C1P3" - both are fine
+          </p>
+          <h4>Currently Supported Stiches</h4>
+          <ul>
+            <li>Knit: Knit or K</li>
+            <li>Purl: Purl or P</li>
+            <li>Cable Front Knit: CFK</li>
+            <li>Cable Back Knit: CBK</li>
+            <li>Cable Front Purl: CFP</li>
+            <li>Cable Back Purl: CBP</li>
+          </ul>
+        </Reactstrap.ModalBody>
+        <Reactstrap.ModalFooter>
+          <Reactstrap.Button color="secondary" onClick={props.onClick}>Cancel</Reactstrap.Button>
+        </Reactstrap.ModalFooter>
+      </Reactstrap.Modal>
+    </div>
+  );
+}
+
+// function rowHighlight(evt, rowNum) {
+//   // function highlights clicked row
+//   if ($(evt.currentTarget).hasClass('highlight') && !$(evt.currentTarget).hasClass('rowEdit')) {
+//     // removes highlight upon clicking something already highlighted that isn't a row-edit box
+//     $('.highlight').removeClass('highlight');
+//     return null;
+//   }
+//   if ($(evt.currentTarget).hasClass('rowSave')) {
+//     // Unhighlight on save row.
+//     $('.highlight').removeClass('highlight');
+//     return null;
+//   }
+//   // highlight most recent row clicked only
+//   $('.highlight').removeClass('highlight');
+//   $(`.row${rowNum}`).addClass('highlight');
+//   return null;
+// }
 
 class SvgMain extends React.PureComponent {
   // Whole SVG component
@@ -62,7 +111,10 @@ class SvgMain extends React.PureComponent {
       rowGroup.add(stitch.image);
     }
     rowGroup.addClass(`row${rowNum}`);
-    rowGroup.click((evt) => rowHighlight(evt, rowNum));
+    rowGroup.click(() => this.props.highlight(rowNum));
+    if (this.props.edit[rowNum].highlight) {
+      rowGroup.addClass('highlight')
+    }
     return rowGroup;
   }
 
@@ -148,6 +200,10 @@ function ColorText(props) {
 
 function RowText(props) {
   // Renders a row of text, with an edit button, or a textbox with a save button
+  let classes = 'row' + props.rowNum.toString();
+  if (props.highlight) {
+    classes += ' highlight'
+  }
   if (props.edit === true) {
     return (<form id={props.rowNum} onSubmit= {(evt)=> {
       evt.preventDefault();
@@ -155,15 +211,14 @@ function RowText(props) {
     }}>
       <input type='text' value={props.value}
         onChange={(evt) => props.handleChange(evt, props.rowNum)} className={
-          `row${props.rowNum} rowEdit`} onClick={(evt) => rowHighlight(evt, props.rowNum)}/>
+          `${classes} rowEdit`}/>
       <input type='submit' value='Save' className={
-        `row${props.rowNum} rowSave`} onClick={(evt) => rowHighlight(evt, props.rowNum)}/>
+        `row${props.rowNum} rowSave`}/>
     </form>
     );
   }
   return (<span key={props.rowNum} >
-    <span className={'row' + props.rowNum.toString()} onClick={
-      (evt) => rowHighlight(evt, props.rowNum)}> {props.rowText}</span>
+    <span className={classes} onClick={()=>props.toggleHighlight(props.rowNum)}> {props.rowText}</span>
     <button className='edit' onClick={()=> props.editRow(
       props.rowNum)}>Edit</button></span>
   );
@@ -174,10 +229,12 @@ class App extends React.Component {
     super(props);
     this.state = {
       rowsText: ['C1K2 C2K2', 'C1CFK2 C2CBK2', 'C2K2 C1K2'],
-      rowsEdit: [{ edit: false }, { edit: false }, { edit: false }],
+      rowsEdit: [{ edit: false, highlight: false }, { edit: false, highlight: false }, { edit: false, highlight: false }],
       colors: ['skyblue', 'pink'],
       colorVals: ['skyblue', 'pink'],
-      name: '' };
+      name: '',
+      colorHelp: false,
+      rowHelp: false };
     this.handleRowSubmit = this.handleRowSubmit.bind(this);
     this.handleRowChange = this.handleRowChange.bind(this);
     this.addARow = this.addARow.bind(this);
@@ -189,12 +246,34 @@ class App extends React.Component {
     this.deleteColor = this.deleteColor.bind(this);
     this.handleSave = this.handleSave.bind(this);
     this.handleNameChange = this.handleNameChange.bind(this);
+    this.toggleColorHelpModal = this.toggleColorHelpModal.bind(this);
+    this.toggleRowHelpModal = this.toggleRowHelpModal.bind(this);
+    this.toggleHighlight = this.toggleHighlight.bind(this);
   }
   componentWillMount() {
     // Adds all stitches to state
     this.state.rowsStitches = makeStitchRows(this.state.rowsText);
   }
 
+  toggleColorHelpModal() {
+    this.setState({ colorHelp: !this.state.colorHelp });
+  }
+
+  toggleRowHelpModal() {
+    this.setState({ rowHelp: !this.state.rowHelp });
+  }
+
+  toggleHighlight(i) {
+    const newState = $.extend(true, {}, this.state);
+    if (newState.rowsEdit[i].highlight) {
+      newState.rowsEdit.forEach((x)=> x.highlight = false);
+    } else {
+      newState.rowsEdit.forEach((x)=> x.highlight = false);
+      newState.rowsEdit[i].highlight = true
+    }
+    this.setState({rowsEdit: newState.rowsEdit});
+  }
+  
   addTopRow() {
     // handles adding a top row (row 1 is bottom)
     const newState = $.extend(true, {}, this.state);
@@ -334,11 +413,11 @@ class App extends React.Component {
 
     for (let i = (this.state.rowsText.length - 1); i >= 0; i -= 1) {
       allRows.push(<span key={i.toString()} ><br/><span className='delete'
-        onClick={() => this.deleteARow(i)}> - </span> <span className={'row' + i}
-        onClick={(evt)=> rowHighlight(evt, i)}>{'Row' +
+        onClick={() => this.deleteARow(i)}> - </span> <span className={this.state.rowsEdit[i].highlight ? `row${i} highlight` : `row${i}`}
+        onClick={()=>this.toggleHighlight(i)}>{'Row' +
         (i + 1).toString()}: </span><RowText edit={this.state.rowsEdit[i].edit} rowNum={i}
-        handleSubmit={this.handleRowSubmit} handleChange={this.handleRowChange}
-        rowText={this.state.rowsText[i]} value={this.state.rowsEdit[i].value} editRow={this.editRow}/>
+        handleSubmit={this.handleRowSubmit} handleChange={this.handleRowChange} highlight={this.state.rowsEdit[i].highlight}
+        rowText={this.state.rowsText[i]} value={this.state.rowsEdit[i].value} editRow={this.editRow} toggleHighlight={this.toggleHighlight}/>
       <br/>
       <span className='add' onClick={() => this.addARow(i)}>
       + </span>
@@ -351,16 +430,18 @@ class App extends React.Component {
     // whole page
     return (
       <React.Fragment>
+
         <div className='row' id='wholepage'>
           <div id='textside' className='col-6'>
-            <h5> Colors</h5>
+            
+            <h5> Colors <span id='colorHelp' onClick={this.toggleColorHelpModal}><i className="fas fa-question-circle"></i></span></h5>
             <div id='colorboxes'>
               <span className='add' onClick={this.addColor}> + </span>
               <span className='delete' onClick={this.deleteColor}> - </span>
               <ColorText colorVals={this.state.colorVals} handleChange={this.handleColorChange}
                 handleSubmit={this.handleColorSubmit}/>
             </div>
-            <h5> Pattern Text </h5>
+            <h5> Pattern Text <span id='rowHelp' onClick={this.toggleRowHelpModal}><i className="fas fa-question-circle"></i></span></h5>
             <div id='text'>
               <span className='add' onClick={() => this.addTopRow()}>
                 +</span>
@@ -369,8 +450,10 @@ class App extends React.Component {
           </div>
           <div id='svgside' className='col-6'>
             <SvgMain key='1' width={this.calculateMaxWidth()} height={this.calculateMaxHeight()}
-              stitchRows={this.state.rowsStitches} colors={this.state.colors}/>
+              stitchRows={this.state.rowsStitches} colors={this.state.colors} edit={this.state.rowsEdit} highlight={this.toggleHighlight}/>
           </div>
+          <ColorHelpModal onClick={this.toggleColorHelpModal} show={this.state.colorHelp}/>
+          <RowHelpModal onClick={this.toggleRowHelpModal} show={this.state.rowHelp}/>
         </div>
         <footer className='fixed-bottom'>
           <div className='offset-2'>

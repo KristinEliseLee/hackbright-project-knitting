@@ -2,7 +2,7 @@
 
 function SearchBar(props) {
   return (
-    <form action='/patterns/search/results.json' onSubmit={(evt) => {
+    <form action='/patterns/search/results.json' id='searchbar' onSubmit={(evt) => {
       evt.preventDefault(); props.onSubmit(1);
     }}>
       <input type='text' className="searchBar" value={props.value} name='searchVal' onChange={props.onChange}/>
@@ -114,6 +114,7 @@ class App extends React.Component {
       <div className='row'>
         <div className='col-6 offset-3'>
         <h4> Search Pattern By Name </h4>
+        <br/>
           <SearchBar onSubmit={this.handleSearch} onChange={this.handleSearchChange}
             value={this.state.value} />
         </div>
