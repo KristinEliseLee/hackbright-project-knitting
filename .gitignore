@@ -3,3 +3,4 @@ winenv/
 *.pyc
 /static/patternSVGs
 gecko*
+node_modules/

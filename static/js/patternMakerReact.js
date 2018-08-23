@@ -1,13 +1,15 @@
+/* global React Reactstrap $ :true */
+
 function SimpleBar({ children, ...options }) {
   return (
     <div data-simplebar {...options}>
-      <div className="simplebar-scroll-content">
-        <div className="simplebar-content">
+      <div className='simplebar-scroll-content'>
+        <div className='simplebar-content'>
           {children}
         </div>
       </div>
     </div>
-  )
+  );
 }
 
 function ColorHelpModal(props) {
@@ -108,7 +110,7 @@ class SvgMain extends React.PureComponent {
     rowGroup.addClass(`row${rowNum}`);
     rowGroup.click(() => this.props.highlight(rowNum));
     if (this.props.edit[rowNum].highlight) {
-      rowGroup.addClass('highlight')
+      rowGroup.addClass('highlight');
     }
     return rowGroup;
   }
@@ -136,7 +138,6 @@ class SvgMain extends React.PureComponent {
     $('.frontCable').attr({ fillOpacity: 100 });
     let frontCables = s.selectAll('.frontCable');
     frontCables.forEach((el) => {
-      let trns = el.transform();
       const parentGroup = el.parent();
       el.remove();
       s.add(el);
@@ -164,12 +165,13 @@ function SavePattern(props) {
     <form id='savePattern' onSubmit={(evt) => {
       evt.preventDefault(); props.handleSubmit();
     }}><div className='form-group row'>
-    <span className='nameLable col-form-label'> Name: </span>
-    <div className='col-5 input-group'>
-      <input type='text' id='nameBox'className='form-control text-input' required onChange={(evt) => props.handleChange(evt)}
-        value={props.value}/>
-      <input type='submit' className='savePattern btn btn-outline-secondary' value='Save'/>
-      </div>
+        <span className='nameLable col-form-label'> Name: </span>
+        <div className='col-5 input-group'>
+          <input type='text' id='nameBox'className='form-control text-input'
+            required onChange={(evt) => props.handleChange(evt)}
+            value={props.value}/>
+          <input type='submit' className='savePattern btn btn-outline-secondary' value='Save'/>
+        </div>
       </div>
     </form>
   );
@@ -185,12 +187,12 @@ function ColorText(props) {
         evt.preventDefault();
         props.handleSubmit(i);
       }} ><div className='form-group form-inline'>
-      <span className='col-form-label'>Color {i + 1}</span>
-        <input className='form-control text-input' type='text' value={
-          props.colorVals[i]} onChange={(evt) =>{
-          props.handleChange(evt, i);
-        }} />
-        <input type='submit' className='btn btn-outline-secondary'value='Save' />
+          <span className='col-form-label'>Color {i + 1}</span>
+          <input className='form-control text-input' type='text' value={
+            props.colorVals[i]} onChange={(evt) =>{
+            props.handleChange(evt, i);
+          }} />
+          <input type='submit' className='btn btn-outline-secondary'value='Save' />
         </div></form>
     );
   }
@@ -218,11 +220,11 @@ function RowText(props) {
     </form>
     );
   }
-  return (<span key={props.rowNum} ><button className='edit btn-outline-secondary btn btn-sm' onClick={()=> props.editRow(
-      props.rowNum)}>Edit</button><span className={classes}
-        onClick={()=>props.toggleHighlight(props.rowNum)}>{'Row' +
-        (props.rowNum + 1).toString()}: </span>
-    <span className={classes} onClick={()=>props.toggleHighlight(props.rowNum)}> {props.rowText}</span>
+  return (<span key={props.rowNum}><button className='edit btn-outline-secondary btn btn-sm'
+      onClick={()=> props.editRow(props.rowNum)}>Edit</button><span className={classes}
+      onClick={()=>props.toggleHighlight(props.rowNum)}>{'Row' +
+      (props.rowNum + 1).toString()}: </span>
+      <span className={classes} onClick={()=>props.toggleHighlight(props.rowNum)}> {props.rowText}</span>
     </span>
   );
 }
