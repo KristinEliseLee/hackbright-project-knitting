@@ -179,3 +179,7 @@ table, tbody, tr, td, .table td{
     color:#525174;
     text-align:center;
 }
+
+.svgstitch {
+    cursor: pointer;
+}

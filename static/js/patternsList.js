@@ -42,7 +42,7 @@ function DisplayPages(props) {
       numPages.push(<span key={i} className='currentPage'>{i}</span>);
     }
   }
-  allPages.push(<div className='numpages col-6'>{numPages}</div>);
+  allPages.push(<div key='numpages' className='numpages col-6'>{numPages}</div>);
   if (props.page < props.numPages) {
     allPages.push(<div key='next' className='col-1 pages' onClick={
       ()=>props.onClick(props.page + 1)}> {'next>>'} </div>

@@ -5,7 +5,6 @@ from sqlalchemy import desc, func
 from model import connect_to_db, User, Pattern, UserLikesPattern, db
 import math
 
-
 def get_most_liked():
     """ Returns top 5 most liked patterns"""
     base_query = db.session.query(Pattern.pattern_id, Pattern.pattern_name,

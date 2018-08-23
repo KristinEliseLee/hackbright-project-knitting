@@ -1,17 +1,31 @@
 {% extends 'base.html' %}
-{% block HEAD %}<title>{{pattern.pattern_name}}</title>{% endblock %}
+{% block HEAD %}<title>{{pattern.pattern_name}}</title>
+<link rel="stylesheet" type="text/css" href="/static/css/no_scroll.css">
+{% endblock %}
+
 {% block BODY %}
-<h1>{{pattern.pattern_name}}</h1>
-<div class='row col-12'>
+<div class='row' id='patternName'>
+    <h1>{{pattern.pattern_name}}</h1>
+</div>
+<div class='row' id='faveOption'>
     <span id="like" class="like" display='none'>Mark favorite?<i class="far fa-heart"></i></span>
     <span id="liked" class="like" display='none'>Favorited<i class="fas fa-heart"></i></span>
 </div>
-<div class="row">
-    <div class="col-7 offset-1">
-        <pre class="half">{{pattern.pattern_text}}</pre>
+<div class="row" id="patternPieces">
+    <div class="col-7 offset-1 length">
+        <div id='patternText' data-simplebar>
+            <p>
+                {%set pattern_list = pattern.pattern_text.split('\n')%}
+                {%for line in pattern_list%}
+                {{line}}<br>
+                {%endfor%}
+            </p>
+        </div>
     </div>
-    <div class="col-3">
-        <img src='{{pattern.pattern_url}}' class="half">
+    <div class="col-3 length">
+        <div id='patternImg' data-simplebar>
+            <img src='{{pattern.pattern_url}}'>
+        </div>
     </div>
 </div>
 <script>

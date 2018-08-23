@@ -10,10 +10,6 @@ function SimpleBar({ children, ...options }) {
   )
 }
 
-// SimpleBar.propTypes = {
-//   children: PropTypes.node
-// };
-
 function ColorHelpModal(props) {
   return (
     <div>
@@ -84,6 +80,7 @@ class SvgMain extends React.PureComponent {
     }
     const group = s.g(prevColor, mainColor, outline);
     group.addClass(stitch.cableClass);
+    group.addClass('svgstitch');
     stitch.image = group;
   }
 
@@ -456,13 +453,15 @@ class App extends React.Component {
             </div>
           </div>
           <div id='svgside' className='col-6'>
-          <div id='svgBox'>
+          
             <SimpleBar id='outerSVGbox'>
+            <div>
               <SvgMain key='1' width={this.calculateMaxWidth()} height={this.calculateMaxHeight()}
                 stitchRows={this.state.rowsStitches} colors={this.state.colors}
                 edit={this.state.rowsEdit} highlight={this.toggleHighlight}/>
+                </div>
             </SimpleBar>
-            </div>
+            
           </div>
           <ColorHelpModal onClick={this.toggleColorHelpModal} show={this.state.colorHelp}/>
           <RowHelpModal onClick={this.toggleRowHelpModal} show={this.state.rowHelp}/>

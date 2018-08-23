@@ -98,7 +98,7 @@ def get_search_results():
     """Sends search results back for AJAX"""
     search_val = request.args.get('searchVal')
     page = int(request.args.get('page', 1,))
-    return make_search_json(search_val, page, 2)
+    return make_search_json(search_val, page, 10)
 
 
 @app.route('/patterns/new')

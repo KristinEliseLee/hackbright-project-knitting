@@ -31,7 +31,7 @@
 .list {
     height: 90%;
     width: 100%;
-    overflow: auto;
+    overflow: scroll;
 }
 
 footer {
@@ -48,24 +48,27 @@ footer {
     width: 100%;
     overflow: hidden;
 }
+[data-simplebar] {
 
-#svgBox {
+    max-height: none;
+}
+/*#svgBox {
     height: 100%;
     max-height: 100%;
     width:100%;
     overflow: hidden;
-}
-.simplebar-content {
+}*/
+/*.simplebar-content {
     overflow-y: hidden!important;
-    overflow-x: scroll;
+    overflow-x: scroll!important;
     box-sizing: content-box!important;
     min-height: 100%!important;
-}
+}*/
 
 #outerSVGbox {
     height: 100%;
     width: 100%;
-    overflow: hidden;
+    /*overflow: hidden;*/
 }
 
 #svgside {
@@ -105,4 +108,33 @@ footer {
     height:95%;
     width: 100%;
     overflow: auto;
+}
+
+#patternName {
+    height:10%;
+}
+
+#faveOption {
+    height:5%;
+}
+
+#patternPieces {
+    height: 75%;
+    overflow: hidden;
+}
+
+.length {
+    height:100%;
+    overflow: hidden;
+}
+
+#patternImg {
+    /*overflow: auto;*/
+    height:100%;
+}
+
+#patternText {
+    /*overflow: auto;*/
+    height:100%;
+    color:#525174;
 }
