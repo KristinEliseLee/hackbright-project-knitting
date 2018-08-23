@@ -3,14 +3,14 @@
 {% block BODY %}
 <h1>{{pattern.pattern_name}}</h1>
 <div class='row col-12'>
-    <span id="like" class="like" display='none'>Like<i class="far fa-heart"></i></span>
-    <span id="liked" class="like" display='none'>Liked<i class="fas fa-heart"></i></span>
+    <span id="like" class="like" display='none'>Mark favorite?<i class="far fa-heart"></i></span>
+    <span id="liked" class="like" display='none'>Favorited<i class="fas fa-heart"></i></span>
 </div>
 <div class="row">
-    <div class="col-6">
+    <div class="col-7 offset-1">
         <pre class="half">{{pattern.pattern_text}}</pre>
     </div>
-    <div class="col-6">
+    <div class="col-3">
         <img src='{{pattern.pattern_url}}' class="half">
     </div>
 </div>

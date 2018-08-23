@@ -5,7 +5,6 @@ from model import connect_to_db, User, Pattern, UserLikesPattern, db, create_tes
 import json
 from passlib.hash import argon2
 
-
 class DBTestCase(unittest.TestCase):
 
     def setUp(self):
@@ -122,6 +121,16 @@ class FlaskTestCase(unittest.TestCase):
             with c.session_transaction() as sess:
                 self.assertEqual(sess.get('user_id'), user.user_id)
 
+    def test_logout(self):
+        user = User.query.filter(User.email == 'potato@potato').one()
+        with self.client as c:
+            with c.session_transaction() as sess:
+                sess['user_id'] = user.user_id
+        result = self.client.get('/logout')
+        with self.client as c:
+            with c.session_transaction() as sess:
+                self.assertIsNone(sess.get('user_id'))
+
     def test_bad_login(self):
         user = User.query.filter(User.email == 'potato@potato').one()
         result = self.client.post('/login', data={'email': user.email,
@@ -193,6 +202,10 @@ class FlaskTestCase(unittest.TestCase):
         text = file.readline()
         file.close()
         self.assertEqual(text,pattern_svg)
+
+
+
+
 
 
 if __name__ == '__main__':

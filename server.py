@@ -83,23 +83,22 @@ def show_current_user_page():
 
 @app.route('/patterns')
 def show_all_patterns():
-    """ currently shows all patterns in no particular order, will change to paginate in React"""
-    patterns = Pattern.query.order_by(Pattern.pattern_id).all()
-    return render_template('patterns.html', patterns=patterns)
+    """ shows the results of seach '' """
+    return render_template('patterns.html')
 
 
 @app.route('/patterns/search')
 def show_search_form():
-    """"""
+    """ Patterns search page"""
     return render_template('patterns_search.html')
 
 
 @app.route('/patterns/search/results.json')
 def get_search_results():
-    """"""
+    """Sends search results back for AJAX"""
     search_val = request.args.get('searchVal')
-    page = int(request.args.get('page', 1))
-    return make_search_json(search_val, page)
+    page = int(request.args.get('page', 1,))
+    return make_search_json(search_val, page, 2)
 
 
 @app.route('/patterns/new')
@@ -162,6 +161,6 @@ if __name__ == '__main__':
     app.debug = True
 
     # Use the DebugToolbar
-    DebugToolbarExtension(app)
+    # DebugToolbarExtension(app)
 
     app.run(host="0.0.0.0")

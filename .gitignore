@@ -1,3 +1,5 @@
 env/
+winenv/
 *.pyc
 /static/patternSVGs
+gecko*

@@ -1,54 +1,65 @@
 {% extends 'base.html' %}
 {% block HEAD %}<title>Your Page</title>{% endblock %}
+<link rel="stylesheet" type="text/css" href="/static/css/no_scroll.css">
 {% block BODY %}
-<div class="row">
-    <div class="col-6">
-<h4>Patterns You Created:</h4>
-{% if user.created_patterns %}
-    <table class="table">
-    {% for pattern in user.created_patterns %}
-        <tr>
-            <td>
-                <a href="/patterns/{{pattern.pattern_id}}">{{pattern.pattern_name}}</a>
-            </td>
-            <td>
-                <a href="/patterns/{{pattern.pattern_id}}"><img src="{{pattern.pattern_url}}" class="thumbnail"></a>
-            </td>
-        </tr>
-    {% endfor %}
-    </table>
-{% else %}
-<p>
-<br>
-You haven't made any patterns yet!
-<br>
-Make one <a href="/patterns/new">here</a>
-</p>
-{% endif %}
-</div>
-<div class="col-6">
-    <h4>Patterns You Like:</h4>
-    {% if user.likes %}
+<div class="row" id="wholepage">
+  <div class="col offset-2 yourPatternsSide">
+    <div class="title">
+      <h4>Your Patterns</h4>
+    </div>
+    <div class="list"data-simplebar>
+      {% if user.created_patterns %}
         <table class="table">
-            {% for pattern in user.likes %}
-                <tr>
-                    <td>
-                        <a href="/patterns/{{pattern.pattern_id}}">{{pattern.pattern_name}}</a>
-                    </td>
-                    <td>
-                        <a href="/patterns/{{pattern.pattern_id}}"><img src="{{pattern.pattern_url}}" class="thumbnail"></a>
-                    </td>
-                </tr>
-            {% endfor %}
+          {% for pattern in user.created_patterns %}
+            <tr>
+              <td>
+                <a href="/patterns/{{pattern.pattern_id}}">{{pattern.pattern_name}}</a>
+              </td>
+              <td>
+                <a href="/patterns/{{pattern.pattern_id}}"><img src="{{pattern.pattern_url}}" class="thumbnail"></a>
+              </td>
+            </tr>
+          {% endfor %}
         </table>
-    {% else %}
+      {% else %}
         <p>
-            <br>
-            You haven't liked any patterns yet!
-            <br>
-            Check some out <a href="/patterns">here</a>
-            </p>
-    {% endif %}
-</div>
+          <br>
+          You haven't made any patterns yet!
+          <br>
+          Make one <a href="/patterns/new">here</a>
+        </p>
+      {% endif %}
+    </div>
+  </div>
+  <div class="col offset-1 yourFavesSide">
+    <div class='title'>
+      <h4>Favorites:</h4>
+    </div>
+    <div class="list" data-simplebar>
+      {% if user.likes %}
+        <table class="table">
+          {% for pattern in user.likes %}
+            <tr>
+              <td>
+                <a href="/patterns/{{pattern.pattern_id}}">{{pattern.pattern_name}}</a>
+              </td>
+              <td>
+                <a href="/patterns/{{pattern.pattern_id}}"><img src="{{pattern.pattern_url}}" class="thumbnail"></a>
+              </td>
+            </tr>
+          {% endfor %}
+        </table>
+      {% else %}
+        <p>
+          <br>
+          You haven't liked any patterns yet!
+          <br>
+          Check some out <a href="/patterns">here</a>
+        </p>
+      {% endif %}
+    </div>
+  </div>
+  <div class='col-2'>
+  </div>
 </div>
 {% endblock %}

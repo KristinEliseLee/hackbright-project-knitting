@@ -1,0 +1,108 @@
+
+.wholeview {
+    margin: 0;
+    overflow: hidden;
+    height:100%;
+    max-height: 100%;
+    width:100%;
+    max-width: 100%;
+    position: absolute;
+}
+
+#yourPatternsSide {
+    height: 100%;
+    max-height: 100%;
+    min-height: 100%;
+    width:30%;
+    overflow:hidden;
+}
+
+#yourFavesSide {
+    height: 100%;
+    max-height: 100%;
+    min-height: 100%;
+    width:30%;
+    overflow:hidden;
+}
+.title {
+    height:5%;
+}
+
+.list {
+    height: 90%;
+    width: 100%;
+    overflow: auto;
+}
+
+footer {
+    height: 7%;
+    width: 100%;
+    bottom: 0;
+    position: absolute;
+}
+
+#wholepage {
+    position: absolute;
+    margin-bottom: 8%;
+    height:84%;
+    width: 100%;
+    overflow: hidden;
+}
+
+#svgBox {
+    height: 100%;
+    max-height: 100%;
+    width:100%;
+    overflow: hidden;
+}
+.simplebar-content {
+    overflow-y: hidden!important;
+    overflow-x: scroll;
+    box-sizing: content-box!important;
+    min-height: 100%!important;
+}
+
+#outerSVGbox {
+    height: 100%;
+    width: 100%;
+    overflow: hidden;
+}
+
+#svgside {
+    height: 100%;
+    max-height: 100%;
+    min-height: 100%;
+    width:50%;
+    overflow:hidden;
+}
+
+#textside {
+    height: 100%;
+    width:100%;
+    overflow: hidden;
+}
+
+#colorBox {
+    overflow: hidden;
+    height:20%;
+    width: 100%;
+    max-width: 100%
+    margin-bottom: 20px;
+}
+
+#colorBoxes {
+    overflow: auto;
+    height: 75%;
+    width:100%;
+}
+
+#patternBox {
+    height:80%;
+    width: 100%;
+    overflow: hidden;
+}
+#patternTextBox {
+    height:95%;
+    width: 100%;
+    overflow: auto;
+}

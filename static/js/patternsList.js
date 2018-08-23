@@ -25,34 +25,39 @@ function DisplayPages(props) {
   // props - numPages, page
   const allPages = [];
   if (props.page > 1) {
-    allPages.push(<span key='prev' className='pages' onClick={
-      ()=>props.onClick(props.page - 1)}> {'<<prev'} </span>
+    allPages.push(<div key='prev' className='pages col-1' onClick={
+      ()=>props.onClick(props.page - 1)}> {'<<prev'} </div>
     );
+  } else {
+    allPages.push(<div key='prev' className='col-1 currentPage'> {'<<prev'} </div>);
   }
+  const numPages = [];
   for (let i = 1; i <= props.numPages; i += 1) {
     if (i !== props.page) {
-      allPages.push(
+      numPages.push(
         <span key={i} className='pages' onClick={()=>props.onClick(i)}>{i}
         </span>
       );
     } else {
-      allPages.push(<span key={i} className='currentPage'>{i}</span>);
+      numPages.push(<span key={i} className='currentPage'>{i}</span>);
     }
   }
+  allPages.push(<div className='numpages col-6'>{numPages}</div>);
   if (props.page < props.numPages) {
-    allPages.push(<span key='next' className='pages' onClick={
-      ()=>props.onClick(props.page + 1)}> {'next>>'} </span>
+    allPages.push(<div key='next' className='col-1 pages' onClick={
+      ()=>props.onClick(props.page + 1)}> {'next>>'} </div>
     );
+  } else {
+    allPages.push(<div key='next' className='col-1 currentPage'>{'next>>'}</div>);
   }
   if (props.numPages > 1) {
-    return (<React.Fragment><h6>Page {props.page} of {props.numPages}</h6>
-      Go To Page: {allPages}
-    </React.Fragment>
+    return (
+      <div key='allPages' className='row justify-content-center'>{allPages}
+      </div>
     );
   }
   return null;
 }
-
 
 class App extends React.Component {
   constructor(props) {

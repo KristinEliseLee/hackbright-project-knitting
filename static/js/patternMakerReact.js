@@ -1,3 +1,19 @@
+function SimpleBar({ children, ...options }) {
+  return (
+    <div data-simplebar {...options}>
+      <div className="simplebar-scroll-content">
+        <div className="simplebar-content">
+          {children}
+        </div>
+      </div>
+    </div>
+  )
+}
+
+// SimpleBar.propTypes = {
+//   children: PropTypes.node
+// };
+
 function ColorHelpModal(props) {
   return (
     <div>
@@ -12,7 +28,7 @@ function ColorHelpModal(props) {
           </p>
         </Reactstrap.ModalBody>
         <Reactstrap.ModalFooter>
-          <Reactstrap.Button color="secondary" onClick={props.onClick}>Cancel</Reactstrap.Button>
+          <Reactstrap.Button className='btn btn-outline-secondary' onClick={props.onClick}>Cancel</Reactstrap.Button>
         </Reactstrap.ModalFooter>
       </Reactstrap.Modal>
     </div>
@@ -42,30 +58,12 @@ function RowHelpModal(props) {
           </ul>
         </Reactstrap.ModalBody>
         <Reactstrap.ModalFooter>
-          <Reactstrap.Button color="secondary" onClick={props.onClick}>Cancel</Reactstrap.Button>
+          <Reactstrap.Button className='btn btn-outline-secondary' onClick={props.onClick}>Cancel</Reactstrap.Button>
         </Reactstrap.ModalFooter>
       </Reactstrap.Modal>
     </div>
   );
 }
-
-// function rowHighlight(evt, rowNum) {
-//   // function highlights clicked row
-//   if ($(evt.currentTarget).hasClass('highlight') && !$(evt.currentTarget).hasClass('rowEdit')) {
-//     // removes highlight upon clicking something already highlighted that isn't a row-edit box
-//     $('.highlight').removeClass('highlight');
-//     return null;
-//   }
-//   if ($(evt.currentTarget).hasClass('rowSave')) {
-//     // Unhighlight on save row.
-//     $('.highlight').removeClass('highlight');
-//     return null;
-//   }
-//   // highlight most recent row clicked only
-//   $('.highlight').removeClass('highlight');
-//   $(`.row${rowNum}`).addClass('highlight');
-//   return null;
-// }
 
 class SvgMain extends React.PureComponent {
   // Whole SVG component
@@ -168,11 +166,14 @@ function SavePattern(props) {
   return (
     <form id='savePattern' onSubmit={(evt) => {
       evt.preventDefault(); props.handleSubmit();
-    }}>
-    Name:
-      <input type='text' required onChange={(evt) => props.handleChange(evt)}
+    }}><div className='form-group row'>
+    <span className='nameLable col-form-label'> Name: </span>
+    <div className='col-5 input-group'>
+      <input type='text' id='nameBox'className='form-control text-input' required onChange={(evt) => props.handleChange(evt)}
         value={props.value}/>
-      <input type='submit' value='Save'/>
+      <input type='submit' className='savePattern btn btn-outline-secondary' value='Save'/>
+      </div>
+      </div>
     </form>
   );
 }
@@ -186,13 +187,14 @@ function ColorText(props) {
       <form key={i} id={'color' + (i + 1).toString()} onSubmit={(evt)=> {
         evt.preventDefault();
         props.handleSubmit(i);
-      }} ><span>Color {i + 1}</span>
-        <input className='colorBox' type='text' value={
+      }} ><div className='form-group form-inline'>
+      <span className='col-form-label'>Color {i + 1}</span>
+        <input className='form-control text-input' type='text' value={
           props.colorVals[i]} onChange={(evt) =>{
           props.handleChange(evt, i);
         }} />
-        <input type='submit' value='Save' />
-      </form>
+        <input type='submit' className='btn btn-outline-secondary'value='Save' />
+        </div></form>
     );
   }
   return <span> { colorBoxes}</span>;
@@ -200,7 +202,7 @@ function ColorText(props) {
 
 function RowText(props) {
   // Renders a row of text, with an edit button, or a textbox with a save button
-  let classes = 'row' + props.rowNum.toString();
+  let classes = 'rowText row' + props.rowNum.toString();
   if (props.highlight) {
     classes += ' highlight'
   }
@@ -208,36 +210,59 @@ function RowText(props) {
     return (<form id={props.rowNum} onSubmit= {(evt)=> {
       evt.preventDefault();
       props.handleSubmit(props.rowNum);
-    }}>
-      <input type='text' value={props.value}
+    }} className='form-inline'><span className={`${classes} col-form-label`}
+        onClick={()=>props.toggleHighlight(props.rowNum)}>{'Row' +
+        (props.rowNum + 1).toString()}: </span> 
+      <input type='text'  value={props.value}
         onChange={(evt) => props.handleChange(evt, props.rowNum)} className={
-          `${classes} rowEdit`}/>
+          `${classes} rowEdit text-input form-control`}/>
       <input type='submit' value='Save' className={
-        `row${props.rowNum} rowSave`}/>
+        `row${props.rowNum} rowSave btn btn-outline-secondary`}/>
     </form>
     );
   }
-  return (<span key={props.rowNum} >
+  return (<span key={props.rowNum} ><button className='edit btn-outline-secondary btn btn-sm' onClick={()=> props.editRow(
+      props.rowNum)}>Edit</button><span className={classes}
+        onClick={()=>props.toggleHighlight(props.rowNum)}>{'Row' +
+        (props.rowNum + 1).toString()}: </span>
     <span className={classes} onClick={()=>props.toggleHighlight(props.rowNum)}> {props.rowText}</span>
-    <button className='edit' onClick={()=> props.editRow(
-      props.rowNum)}>Edit</button></span>
+    </span>
   );
+}
+
+function RenderRows(props) {
+  // makes all row text lines
+  const allRows = [];
+  allRows.push(<span className='add' key='first' onClick={() => props.addTopRow()}>
+                +</span>)
+  for (let i = (props.rowsText.length - 1); i >= 0; i -= 1) {
+    allRows.push(<span key={i.toString()} ><br/><span className='delete'
+      onClick={() => props.deleteARow(i)}> - </span> <RowText edit={props.rowsEdit[i].edit} rowNum={i}
+      handleSubmit={props.handleRowSubmit} handleChange={props.handleRowChange} highlight={props.rowsEdit[i].highlight}
+      rowText={props.rowsText[i]} value={props.rowsEdit[i].value} editRow={props.editRow} toggleHighlight={props.toggleHighlight}/>
+    <br/>
+    <span className='add' onClick={() => props.addARow(i)}>
+    + </span>
+    </span>);
+  }
+  return allRows;
 }
 
 class App extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      rowsText: ['C1K2 C2K2', 'C1CFK2 C2CBK2', 'C2K2 C1K2'],
+      rowsText: ['COLOR 1 KNIT 3 COLOR 2 KNIT 3', 'C1 CBK3 C2 CFK3', 'C2K3C1K3'],
       rowsEdit: [{ edit: false, highlight: false }, { edit: false, highlight: false }, { edit: false, highlight: false }],
-      colors: ['skyblue', 'pink'],
-      colorVals: ['skyblue', 'pink'],
+      colors: ['skyblue', '#C19AB7'],
+      colorVals: ['skyblue', '#C19AB7'],
       name: '',
       colorHelp: false,
       rowHelp: false };
     this.handleRowSubmit = this.handleRowSubmit.bind(this);
     this.handleRowChange = this.handleRowChange.bind(this);
     this.addARow = this.addARow.bind(this);
+    this.addTopRow = this.addTopRow.bind(this);
     this.deleteARow = this.deleteARow.bind(this);
     this.editRow = this.editRow.bind(this);
     this.handleColorSubmit = this.handleColorSubmit.bind(this);
@@ -406,51 +431,38 @@ class App extends React.Component {
     return (this.state.rowsStitches.length * 18)
   }
 
-
-  renderRows() {
-    // makes all row text lines
-    const allRows = [];
-
-    for (let i = (this.state.rowsText.length - 1); i >= 0; i -= 1) {
-      allRows.push(<span key={i.toString()} ><br/><span className='delete'
-        onClick={() => this.deleteARow(i)}> - </span> <span className={this.state.rowsEdit[i].highlight ? `row${i} highlight` : `row${i}`}
-        onClick={()=>this.toggleHighlight(i)}>{'Row' +
-        (i + 1).toString()}: </span><RowText edit={this.state.rowsEdit[i].edit} rowNum={i}
-        handleSubmit={this.handleRowSubmit} handleChange={this.handleRowChange} highlight={this.state.rowsEdit[i].highlight}
-        rowText={this.state.rowsText[i]} value={this.state.rowsEdit[i].value} editRow={this.editRow} toggleHighlight={this.toggleHighlight}/>
-      <br/>
-      <span className='add' onClick={() => this.addARow(i)}>
-      + </span>
-      </span>);
-    }
-    return allRows;
-  }
-
   render() {
     // whole page
     return (
       <React.Fragment>
-
         <div className='row' id='wholepage'>
-          <div id='textside' className='col-6'>
-            
-            <h5> Colors <span id='colorHelp' onClick={this.toggleColorHelpModal}><i className="fas fa-question-circle"></i></span></h5>
-            <div id='colorboxes'>
-              <span className='add' onClick={this.addColor}> + </span>
-              <span className='delete' onClick={this.deleteColor}> - </span>
-              <ColorText colorVals={this.state.colorVals} handleChange={this.handleColorChange}
-                handleSubmit={this.handleColorSubmit}/>
+          <div id='textside' className='col-5 offset-1'>
+            <div id='colorBox'>
+              <h5><span className='add' onClick={this.addColor}> + </span>
+                <span className='delete' onClick={this.deleteColor}> - </span> Colors <span id='colorHelp' onClick={this.toggleColorHelpModal}><i className="fas fa-question-circle"></i></span></h5>
+              <SimpleBar id='colorBoxes'>
+                <ColorText colorVals={this.state.colorVals} handleChange={this.handleColorChange}
+                  handleSubmit={this.handleColorSubmit}/>
+              </SimpleBar>
             </div>
-            <h5> Pattern Text <span id='rowHelp' onClick={this.toggleRowHelpModal}><i className="fas fa-question-circle"></i></span></h5>
-            <div id='text'>
-              <span className='add' onClick={() => this.addTopRow()}>
-                +</span>
-              {this.renderRows()}
+            <div id='patternBox'>
+              <h5> Pattern Text <span id='rowHelp' onClick={this.toggleRowHelpModal}><i className="fas fa-question-circle"></i></span></h5>
+              <SimpleBar id='patternTextBox'>
+                <RenderRows addTopRow={this.addTopRow} rowsText={this.state.rowsText}
+                  deleteARow={this.deleteARow} rowsEdit={this.state.rowsEdit}
+                  handleRowSubmit={this.handleRowSubmit} handleRowChange={this.handleRowChange}
+                  editRow={this.editRow} toggleHighlight={this.toggleHighlight} addARow={this.addARow}/>
+              </SimpleBar>
             </div>
           </div>
           <div id='svgside' className='col-6'>
-            <SvgMain key='1' width={this.calculateMaxWidth()} height={this.calculateMaxHeight()}
-              stitchRows={this.state.rowsStitches} colors={this.state.colors} edit={this.state.rowsEdit} highlight={this.toggleHighlight}/>
+          <div id='svgBox'>
+            <SimpleBar id='outerSVGbox'>
+              <SvgMain key='1' width={this.calculateMaxWidth()} height={this.calculateMaxHeight()}
+                stitchRows={this.state.rowsStitches} colors={this.state.colors}
+                edit={this.state.rowsEdit} highlight={this.toggleHighlight}/>
+            </SimpleBar>
+            </div>
           </div>
           <ColorHelpModal onClick={this.toggleColorHelpModal} show={this.state.colorHelp}/>
           <RowHelpModal onClick={this.toggleRowHelpModal} show={this.state.rowHelp}/>

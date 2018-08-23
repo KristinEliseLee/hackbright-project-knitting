@@ -2,6 +2,7 @@ argon2-cffi==18.1.0
 blinker==1.4
 cffi==1.11.5
 click==6.7
+coverage==4.5.1
 Flask==1.0.2
 Flask-DebugToolbar==0.10.1
 Flask-SQLAlchemy==2.3.2
@@ -13,7 +14,9 @@ passlib==1.7.1
 pkg-resources==0.0.0
 psycopg2==2.7.5
 pycparser==2.18
+selenium==3.14.0
 six==1.11.0
 SQLAlchemy==1.2.10
+urllib3==1.23
 Werkzeug==0.14.1
 WTForms==2.2.1

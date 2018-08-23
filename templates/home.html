@@ -1,9 +1,9 @@
 {% extends 'base.html' %}
-{% block HEAD %}<title>Home</title>{% endblock %}
+{% block HEAD %}<title>Pixel Stitch</title>{% endblock %}
 {% block BODY %}
 <div class="container-fluid">
-    <div class="row" id="news">
-        <div class="col-10 offset-1">
+    <div class="row justify-content-center" id="news">
+        <div class="col-7 col-md-4">
             <h2>News</h2>
             <ul>
                 <li>
@@ -16,28 +16,31 @@
         </div>
     </div>
     <div class="row">
-        <div class="col-6">
+        <div class="col-4 offset-1">
             <h4> Most Popular </h4>
-            <table class="table col-10 offset-1">
-                {% for pattern in most_liked %}
-                <tr>
-                    <td><a href="/patterns/{{pattern[0]}}">{{pattern[1]}}</a></td>
-                    <td><a href="/patterns/{{pattern[0]}}"><img src="{{pattern[2]}}" class="thumbnail"></a></td>
-                </tr>
-                {% endfor %}
-            </table>
         </div>
-        <div class='col-6'>
+            <div class='col-4 offset-1'>
             <h4> Newest </h4>
-            <table class="table col-10 offset-1">
-                {% for pattern in latest %}
-                <tr>
-                    <td><a href="/patterns/{{pattern[0]}}">{{pattern[1]}}</a></td>
-                    <td><a href="/patterns/{{pattern[0]}}"><img src="{{pattern[2]}}" class="thumbnail"></a></td>
-                </tr>
-                {% endfor %}
-            </table>
         </div>
+    </div>
+    <div class="row">
+        <table class="table col offset-2">
+            {% for pattern in most_liked %}
+            <tr>
+                <td><a href="/patterns/{{pattern[0]}}">{{pattern[1]}}</a></td>
+                <td><a href="/patterns/{{pattern[0]}}"><img src="{{pattern[2]}}" class="thumbnail"></a></td>
+            </tr>
+            {% endfor %}
+        </table>
+        <table class="table col offset-1">
+            {% for pattern in latest %}
+            <tr>
+                <td><a href="/patterns/{{pattern[0]}}">{{pattern[1]}}</a></td>
+                <td><a href="/patterns/{{pattern[0]}}"><img src="{{pattern[2]}}" class="thumbnail"></a></td>
+            </tr>
+            {% endfor %}
+        </table>
+        <div class='col-2'>
     </div>
 </div>
 {% endblock %}

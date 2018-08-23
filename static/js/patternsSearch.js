@@ -4,9 +4,12 @@ function SearchBar(props) {
   return (
     <form action='/patterns/search/results.json' id='searchbar' onSubmit={(evt) => {
       evt.preventDefault(); props.onSubmit(1);
-    }}>
-      <input type='text' className="searchBar" value={props.value} name='searchVal' onChange={props.onChange}/>
-      <input type='submit' name='Search'/>
+    }}><div className='form-group row justify-content-center'>
+      <div className="input-group col-lg-4 col-6" >
+        <input type='text' className="searchBar text-input form-control" value={props.value} name='searchVal' onChange={props.onChange}/>
+        <input type='submit' name='Search' className='btn btn-outline-secondary'/>
+        </div>
+      </div>
     </form>
   );
 }
@@ -36,34 +39,39 @@ function DisplayPages(props) {
   // props - numPages, page
   const allPages = [];
   if (props.page > 1) {
-    allPages.push(<span key='prev' className='pages' onClick={
-      ()=>props.onClick(props.page - 1)}> {'<<prev'} </span>
+    allPages.push(<div key='prev' className='pages col-1' onClick={
+      ()=>props.onClick(props.page - 1)}> {'<<prev'} </div>
     );
+  } else {
+    allPages.push(<div key='prev' className='col-1 currentPage'> {'<<prev'} </div>);
   }
+  const numPages = [];
   for (let i = 1; i <= props.numPages; i += 1) {
     if (i !== props.page) {
-      allPages.push(
+      numPages.push(
         <span key={i} className='pages' onClick={()=>props.onClick(i)}>{i}
         </span>
       );
     } else {
-      allPages.push(<span key={i} className='currentPage'>{i}</span>);
+      numPages.push(<span key={i} className='currentPage'>{i}</span>);
     }
   }
+  allPages.push(<div key='numPages' className='numpages col-6'>{numPages}</div>);
   if (props.page < props.numPages) {
-    allPages.push(<span key='next' className='pages' onClick={
-      ()=>props.onClick(props.page + 1)}> {'next>>'} </span>
+    allPages.push(<div key='next' className='col-1 pages' onClick={
+      ()=>props.onClick(props.page + 1)}> {'next>>'} </div>
     );
+  } else {
+    allPages.push(<div key='next' className='col-1 currentPage'>{'next>>'}</div>);
   }
   if (props.numPages > 1) {
-    return (<React.Fragment><h6>Page {props.page} of {props.numPages}</h6>
-      Go To Page: {allPages}
-    </React.Fragment>
+    return (
+      <div key='allPages' className='row justify-content-center'>{allPages}
+      </div>
     );
   }
   return null;
 }
-
 
 class App extends React.Component {
   constructor(props) {
@@ -111,14 +119,11 @@ class App extends React.Component {
 
   render() {
     return (<div>
-      <div className='row'>
-        <div className='col-6 offset-3'>
+      <div className='row search-text'>
         <h4> Search Pattern By Name </h4>
-        <br/>
-          <SearchBar onSubmit={this.handleSearch} onChange={this.handleSearchChange}
-            value={this.state.value} />
-        </div>
       </div>
+      <SearchBar onSubmit={this.handleSearch} onChange={this.handleSearchChange}
+        value={this.state.value} />
       <DisplayPages numPages={this.state.searchResults.numPages}
         page={this.state.page} onClick={this.handleSearch}/>
       <DisplayResults results={this.state.searchResults.patterns} />

@@ -8,7 +8,6 @@ class RegistrationForm(Form):
     def validate_new_user(form, field):
         if User.query.filter_by(email=field.data).first():
             raise ValidationError('That email is taken')
-
     email = StringField('Email Address', [
         validators.InputRequired(),
         validators.Length(min=6, max=100),

@@ -3,7 +3,7 @@
 function handleResults(results) {
   const data = results.data;
   let fieldsWithErrors = Object.keys(data);
-  if (fieldsWithErrors.length > 1) {
+  if (fieldsWithErrors.length >= 1) {
     for (let field of fieldsWithErrors) {
       $(`.${field}`).append('<ul class="errors"></ul>');
       for (let error of data[field]) {

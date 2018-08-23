@@ -2,10 +2,8 @@
 
 function handleResults(results) {
   const data = results.data;
-  // const data = JSON.parse(results);
-  // console.log(data);
   let fieldsWithErrors = Object.keys(data);
-  if (fieldsWithErrors.length > 1) {
+  if (fieldsWithErrors.length >= 1) {
     for (let field of fieldsWithErrors) {
       $(`.${field}`).append('<ul class="errors"></ul>');
       for (let error of data[field]) {
@@ -22,7 +20,6 @@ function handleSubmit(evt) {
   $('.errors').remove();
   const formData = $('#login').serialize();
   $('#password').value = '';
-  // $('#confirm').value = '';
 
   $.post('/login', formData, handleResults);
 }
