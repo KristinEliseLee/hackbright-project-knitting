@@ -3,9 +3,10 @@ from flask_debugtoolbar import DebugToolbarExtension
 from model import connect_to_db, User, Pattern, UserLikesPattern, db
 from forms import RegistrationForm, LoginForm
 from server_helper_functions import *
+import os
 
 app = Flask(__name__)
-app.secret_key = 'ABCSECRETDEF'
+app.secret_key = os.environ['FLASK_KEY']
 connect_to_db(app, 'knitpreviewproject')
 
 
@@ -158,7 +159,7 @@ def save_pattern():
 
 if __name__ == '__main__':
 
-    app.debug = True
+    app.debug = False
 
     # Use the DebugToolbar
     # DebugToolbarExtension(app)

@@ -4,3 +4,4 @@ winenv/
 /static/patternSVGs
 gecko*
 node_modules/
+*.sh
