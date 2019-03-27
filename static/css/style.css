@@ -9,14 +9,18 @@
 
 .add {
     color:#33cc33;
-    font-size: 14pt;
+    font-size: 20pt;
     cursor:pointer;
+    margin:0;
+    padding: 0;
 }
 
 .delete {
     color:red;
-    font-size: 14pt;
+    font-size: 20pt;
     cursor: pointer;
+    margin:0;
+    padding: 0;
 }
 
 .add:hover {

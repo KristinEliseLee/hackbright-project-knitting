@@ -99,7 +99,7 @@ class FlaskTestCase(unittest.TestCase):
 
     def test_search_shows(self):
         result = self.client.get('/patterns/search')
-        self.assertIn(b'patternsSearch.js', result.data)
+        self.assertIn(b'patternsSearchTranslated.js', result.data)
 
     def test_pattern_page_shows(self):
         pattern = Pattern.query.filter(Pattern.pattern_name=='Purl').one()
@@ -171,7 +171,7 @@ class FlaskTestCase(unittest.TestCase):
             with c.session_transaction() as sess:
                 sess['user_id'] = user.user_id
         result = self.client.get('/user', follow_redirects = True)
-        self.assertIn(b'Patterns You Created', result.data)
+        self.assertIn(b'Your Patterns', result.data)
         self.assertNotIn(b'Email Address', result.data)
 
     def test_user_logged_in_new_pattern_page(self):
@@ -180,7 +180,7 @@ class FlaskTestCase(unittest.TestCase):
             with c.session_transaction() as sess:
                 sess['user_id'] = user.user_id
         result = self.client.get('/patterns/new', follow_redirects = True)
-        self.assertIn(b'patternMakerReact.js', result.data)
+        self.assertIn(b'patternMakerTranslated.js', result.data)
         self.assertNotIn(b'Email Address', result.data)
 
     def test_pattern_save(self):

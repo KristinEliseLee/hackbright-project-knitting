@@ -5,3 +5,4 @@ winenv/
 gecko*
 node_modules/
 *.sh
+htmlcov/
