@@ -1,3 +1,5 @@
+to view live: http://littlepixelstitch.com/
+
 This webap lets you make knit patterns (written as if in the round)
 
 It shows what they will look like using SVGs, then allows naming, saving, searching, and liking other patterns.
