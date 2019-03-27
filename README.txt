@@ -1,3 +1,8 @@
+This webap lets you make knit patterns (written as if in the round)
+
+It shows what they will look like using SVGs, then allows naming, saving, searching, and liking other patterns.
+
+
 Steps to use:
 
     create a secrets.sh file that says
